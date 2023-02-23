@@ -1,4 +1,4 @@
-dist-newstyle
-.vscode
-.editorconfig
-utils/wallets
+dist-newstyle/
+output/
+scripts-private/
+readme-private.md

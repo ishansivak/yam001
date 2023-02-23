@@ -1,80 +1,60 @@
-Cabal-Version:            1.0
-Name:                     yam001
-Version:                  1.0.0
-Author:                   Ekival
-Build-Type:               Simple
-License:                  Apache-2.0
-License-file:             LICENSE
+cabal-version:      2.4
+name:               yam001
+version:            1.0.0
+description:        Yamfore MVP prototype
+license:            Apache-2.0
+author:             Sean Ishan Sivakumaran
+maintainer:         yamfore.com
+build-type:         Simple
 
-Common project-config
-  default-language:       Haskell2010
-  default-extensions:     NoImplicitPrelude
-                          OverloadedStrings
-                          ExplicitForAll
-                          ScopedTypeVariables
-                          DeriveGeneric
-                          StandaloneDeriving
-                          DeriveLift
-                          GeneralizedNewtypeDeriving
-                          DeriveFunctor
-                          DeriveFoldable
-                          DeriveTraversable
-                          LambdaCase
-                          MultiParamTypeClasses
-                          TypeOperators
-                          FlexibleInstances
-                          NamedFieldPuns
-                          TypeFamilies
-                          FlexibleContexts
-                          DeriveAnyClass
-                          DerivingStrategies
-                          DerivingVia
-                          DataKinds
-                          PatternGuards
-  ghc-options:            -Wall
-                          -Wcompat
-                          -Wincomplete-record-updates
-                          -Wnoncanonical-monad-instances
-                          -Wredundant-constraints
-                          -Wincomplete-uni-patterns
-                          -Wunused-packages
-                          -Widentities
-                          -rtsopts
-                          -fno-ignore-interface-pragmas
-                          -fno-omit-interface-pragmas
-                          -fobject-code
-                          -fno-specialise
-                          -fno-spec-constr
-                          -fno-strictness
+Flag unexpected_thunks
+  Description:   Turn on unexpected thunks checks
+  Default:       False
 
-Library
-  import:                 project-config
-  hs-source-dirs:         src
-  exposed-modules:
-                          Treasury.Validator
-  build-depends:
-                          base
-                        , aeson
-                        , bytestring
-                        , cardano-api
-                        , directory
-                        , filepath
-                        , plutus-core
-                        -- , plutus-ledger
-                        , plutus-ledger-api
-                        , plutus-tx
-                        , plutus-tx-plugin
-                        , serialise
-                        , split
-                        , plutus-script-utils
-                        , plutonomy
+common base
+  build-depends: base >= 4.14 && < 4.15
 
+common project-config
+  default-language:     Haskell2010
 
-executable             TimeAnalysis
-  main-is:             TimeAnalysis.hs
-  hs-source-dirs:      utils/scripts
-  build-depends:       aeson
-                     , base ^>=4.14.1.0
-                     , plutus-ledger
-  default-language:    Haskell2010
-  ghc-options:        -Wall
+  default-extensions:   NoImplicitPrelude
+                        OverloadedStrings
+
+  ghc-options:          -Wall
+                        -Wcompat
+                        -Wincomplete-record-updates
+                        -Wpartial-fields
+                        -Wredundant-constraints
+                        -Wincomplete-uni-patterns
+                        -Wmissing-export-lists
+                        -Wpartial-fields
+                        -Wmissing-deriving-strategies
+                        -Wunused-packages
+
+common maybe-Win32
+  if os(windows)
+     build-depends:    Win32
+
+library
+  import:               base, project-config
+                      , maybe-Win32
+
+  if flag(unexpected_thunks)
+    cpp-options: -DUNEXPECTED_THUNKS
+
+  hs-source-dirs:       src
+
+  exposed-modules:      Treasury.TreasuryValidator
+
+  build-depends:        bytestring
+                      , cardano-api
+                      , plutus-ledger
+                      , plutus-ledger-api
+                      , plutus-ledger-constraints
+                      , plutus-tx
+                      , plutus-tx-plugin
+                      , plutus-script-utils
+                      , serialise
+                      , aeson
+
+  ghc-options: -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
