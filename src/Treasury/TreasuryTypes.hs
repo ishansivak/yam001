@@ -28,8 +28,7 @@ import qualified Prelude as Pr
 
 
 data TreasuryParam = TreasuryParam
-  { tPolicyId :: CurrencySymbol,
-    tName :: TokenName
+  { cblpToken :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -37,10 +36,15 @@ PlutusTx.makeLift ''TreasuryParam
 
 -- consider representing Issuer with a token, instead of PKH
 data TreasuryDatum = TreasuryDatum
-  { govPolicyId :: CurrencySymbol,
-    govTokenName :: TokenName
+  { paramNFT  :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
+
+instance Eq TreasuryDatum where
+  {-# INLINEABLE (==) #-}
+  TreasuryDatum {paramNFT = a} == TreasuryDatum {paramNFT = a'} = (a == a')
+
+
 
 PlutusTx.unstableMakeIsData ''TreasuryDatum
 

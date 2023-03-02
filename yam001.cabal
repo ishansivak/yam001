@@ -45,6 +45,9 @@ library
   hs-source-dirs:       src
 
   exposed-modules:      Treasury.TreasuryValidator
+                        Treasury.TreasuryTypes
+                        Treasury.TreasuryCompiler
+                        ToJSON
 
   build-depends:        bytestring
                       , cardano-api
