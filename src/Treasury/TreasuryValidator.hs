@@ -26,7 +26,7 @@ import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
 import Treasury.TreasuryTypes
-
+import Param.ParamTypes
 
 {-# INLINEABLE treasuryValidator #-}
 treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> ScriptContext -> Bool
@@ -105,27 +105,72 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       paramOutput :: TxOut
       paramOutput = hasNFT [txInInfoResolved y | y <- references]
 
+      --Fetching and using param datum
+      pDatum :: OutputDatum -> Maybe ParamDatum
+      pDatum md = do 
+        case md of
+          OutputDatum d -> fromBuiltinData (getDatum d)
+          _             -> traceError "Datum not found"
+      
+      pODatum :: ParamDatum
+      pODatum = case pDatum $ txOutDatum paramOutput of
+        Just td -> td
+        _       -> traceError "Output does not have treasury datum"
 
+      --Loan UTxO conditions defined below
 
+      txOuts :: [TxOut]
+      txOuts = txInfoOutputs info
 
+      addrParse :: TxOut -> (Credential, Maybe StakingCredential)
+      addrParse tx = (a,b)
+                     where
+                      add = txOutAddress tx
+                      a   = addressCredential add
+                      b   = addressStakingCredential add
 
+      lOutputs :: [TxOut]
+      lOutputs = [op | op <- txOuts , (loanValHash pODatum, Just (stake1 pODatum)) == addrParse op]
 
+      loanOutput :: TxOut
+      loanOutput = case lOutputs of
+        [o]     ->  o
+        _       ->  traceError "There must be exactly 1 loan output"
+      
+      loanValue :: Value
+      loanValue = txOutValue loanOutput
+      
+      adaAsset :: AssetClass
+      adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
+
+      adaLocked :: Integer
+      adaLocked = assetClassValueOf loanValue adaAsset
+
+      cblpLocked :: Integer
+      cblpLocked = assetClassValueOf loanValue paramAsset
+
+      usd1Asset :: AssetClass
+      usd1Asset = usd1 pODatum
+
+      usd1Withdrawn :: Integer
+      usd1Withdrawn = (assetClassValueOf treasuryOutputValue usd1Asset) - (assetClassValueOf treasuryInputValue usd1Asset)
+      
 
       --Final formulation of spending conditions
       datumCondition :: Bool
-      datumCondition =  True  --treasuryInputDatum == treasuryOutputDatum
+      datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
       withdrawConditions :: Bool
-      withdrawConditions = True 
+      withdrawConditions = (adaLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
 
       depositConditions :: Bool
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
 
       updateAuthAddr :: PubKeyHash
-      updateAuthAddr = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b"
+      updateAuthAddr = PubKeyHash { getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b" }
 
       updateConditions :: Bool
-      updateConditions = True
+      updateConditions = txSignedBy info updateAuthAddr
 
 
 

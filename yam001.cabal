@@ -47,6 +47,7 @@ library
   exposed-modules:      Treasury.TreasuryValidator
                         Treasury.TreasuryTypes
                         Treasury.TreasuryCompiler
+                        Param.ParamTypes
                         ToJSON
 
   build-depends:        bytestring

@@ -25,9 +25,9 @@ writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file 
 
 writeProjectTreasuryScript :: IO (Either (FileError ()) ())
 writeProjectTreasuryScript =
-  writeValidator "output/treasury.plutus" $
+  writeValidator "output/treasury001.plutus" $
     Treasury.validator $
       TreasuryParam
-        { cblpToken = Plutus.V1.Ledger.Value.assetClass "738ec2c17e3319fa3e3721dbd99f0b31fce1b8006bb57fbd635e3784" "tCBLP"
+        { cblpToken = Plutus.V1.Ledger.Value.assetClass "0c9d679170cad870e1cffe45bc685d2f8b903801dca58a9bbb621794" "tCBLP"
         }
 
