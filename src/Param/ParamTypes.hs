@@ -24,6 +24,14 @@ import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
 
+{-
+Potential additional params in the param datum:
+maxLoan (definite)
+additional stake keys
+additional usd coins
+treasuryValHash (definite)
+finite interest repayment variable
+-}
 data ParamDatum = ParamDatum
   { cRatio       :: Integer,   --6 digit CR e.g. 1.6 = 1600000
     adaUSD       :: Integer,
