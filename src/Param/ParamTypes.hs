@@ -34,13 +34,16 @@ finite interest repayment variable
 -}
 data ParamDatum = ParamDatum
   { cRatio       :: Integer,   --6 digit CR e.g. 1.6 = 1600000
-    adaUSD       :: Integer,
+    usdLL        :: Integer,
+    cblpLL       :: Integer,
     stake1       :: StakingCredential,
     usd1         :: AssetClass,
     usd1decimal  :: Integer,
     minLoan      :: Integer,
+    maxLoan      :: Integer,
     loanValHash  :: Credential,
-    arbValHash   :: Credential
+    arbValHash   :: Credential,
+    trValHash    :: Credential
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

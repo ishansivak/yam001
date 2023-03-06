@@ -143,29 +143,35 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       adaAsset :: AssetClass
       adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
 
-      adaLocked :: Integer
-      adaLocked = assetClassValueOf loanValue adaAsset
+      llLocked :: Integer
+      llLocked = assetClassValueOf loanValue adaAsset   --Amount of lovelace locked by contract
 
       cblpLocked :: Integer
-      cblpLocked = assetClassValueOf loanValue paramAsset
+      cblpLocked = assetClassValueOf loanValue paramAsset  --Amount of CBLP *10^6  (decimal point)
 
       usd1Asset :: AssetClass
       usd1Asset = usd1 pODatum
 
       usd1Withdrawn :: Integer
       usd1Withdrawn = (assetClassValueOf treasuryOutputValue usd1Asset) - (assetClassValueOf treasuryInputValue usd1Asset)
-      
 
-      --Final formulation of spending conditions
+      usd1Dec :: Integer
+      usd1Dec = usd1decimal pODatum
+      
+      collateralCheck :: Bool
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+
+      --Final formulation of withdraw spending conditions
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
       withdrawConditions :: Bool
-      withdrawConditions = (adaLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
-
+      withdrawConditions = (llLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
+      --Deposit conditions
       depositConditions :: Bool
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
-
+      --Update conditions
+      
       updateAuthAddr :: PubKeyHash
       updateAuthAddr = PubKeyHash { getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b" }
 
