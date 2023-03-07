@@ -122,18 +122,13 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       txOuts :: [TxOut]
       txOuts = txInfoOutputs info
 
-      addrParse :: TxOut -> (Credential, Maybe StakingCredential)
-      addrParse tx = (a,b)
-                     where
-                      add = txOutAddress tx
-                      a   = addressCredential add
-                      b   = addressStakingCredential add
+      
 
-      lOutputs :: [TxOut]
-      lOutputs = [op | op <- txOuts , (loanValHash pODatum, Just (stake1 pODatum)) == addrParse op]
+      lOutputsPay :: [TxOut]
+      lOutputs = [op | op <- txOuts , pkh == PubKeyCredential (loanValHash pODatum) where pkh = (addressCredential (txOutAddress op))]
 
       loanOutput :: TxOut
-      loanOutput = case lOutputs of
+      loanOutput = case lOutputsPay of
         [o]     ->  o
         _       ->  traceError "There must be exactly 1 loan output"
       

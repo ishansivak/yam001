@@ -19,7 +19,7 @@ import            Param.ParamTypes
 
 testDatum :: TreasuryDatum
 testDatum = TreasuryDatum {
-      paramNFT = assetClass "0c9d679170cad870e1cffe45bc685d2f8b903801dca58a9bbb621794" "paramtoken"
+      paramNFT = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
 } 
 
 
@@ -28,14 +28,14 @@ paramDatum = ParamDatum
   { cRatio       =   60,   --6 digit CR e.g. 1.6 = 1600000
     usdLL        =   1000000,
     cblpLL       =   10000,
-    stake1       =   StakingHash (PubKeyCredential (PubKeyHash {getPubKeyHash = "379a9b045a4927bf8fd284166fef7fcd2b44e5811760c753ca049018"})),
-    usd1         =   assetClass "0c9d679170cad870e1cffe45bc685d2f8b903801dca58a9bbb621794" "tUSD",
+    stake1       =   PubKeyHash {getPubKeyHash = "4f7ff7e6fcf93cdf36aabbc0407d252f67003841389e37fe83ef381c"},
+    usd1         =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
     usd1decimal  =   1000000,
     minLoan      =   100,
     maxLoan      =   1000,
-    loanValHash  =   PubKeyCredential (PubKeyHash {getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b"}),
-    arbValHash   =   PubKeyCredential (PubKeyHash {getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b"}),
-    trValHash    =   PubKeyCredential (PubKeyHash {getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b"})
+    loanValHash  =   PubKeyHash {getPubKeyHash = "d464987bfd2c3e2c3f48ad747d0a37f99be745b2f335f0802a07f689"},
+    arbValHash   =   PubKeyHash {getPubKeyHash = "d464987bfd2c3e2c3f48ad747d0a37f99be745b2f335f0802a07f689"},
+    trValHash    =   PubKeyHash {getPubKeyHash = "d464987bfd2c3e2c3f48ad747d0a37f99be745b2f335f0802a07f689"}
   }
 
 updateRedeemer :: TreasuryRedeemer

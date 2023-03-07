@@ -36,14 +36,14 @@ data ParamDatum = ParamDatum
   { cRatio       :: Integer,   --6 digit CR e.g. 1.6 = 1600000
     usdLL        :: Integer,
     cblpLL       :: Integer,
-    stake1       :: StakingCredential,
+    stake1       :: PubKeyHash,
     usd1         :: AssetClass,
     usd1decimal  :: Integer,
     minLoan      :: Integer,
     maxLoan      :: Integer,
-    loanValHash  :: Credential,
-    arbValHash   :: Credential,
-    trValHash    :: Credential
+    loanValHash  :: PubKeyHash,
+    arbValHash   :: PubKeyHash,
+    trValHash    :: PubKeyHash
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
