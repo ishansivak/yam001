@@ -125,7 +125,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
 
       lOutputsPay :: [TxOut]
-      lOutputs = [op | op <- txOuts , pkh == PubKeyCredential (loanValHash pODatum) where pkh = (addressCredential (txOutAddress op))]
+      lOutputsPay = [op | op <- txOuts , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
 
       loanOutput :: TxOut
       loanOutput = case lOutputsPay of
