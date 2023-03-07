@@ -167,11 +167,9 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
       --Update conditions
       
-      updateAuthAddr :: PubKeyHash
-      updateAuthAddr = PubKeyHash { getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b" }
 
       updateConditions :: Bool
-      updateConditions = txSignedBy info updateAuthAddr
+      updateConditions = True
 
 
 
