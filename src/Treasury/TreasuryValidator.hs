@@ -11,10 +11,11 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Treasury.TreasuryValidator (validator) where
+module Treasury.TreasuryValidator (validator, treasuryValidator) where
 
 
-import Ledger (scriptHashAddress)
+import Ledger (scriptHashAddress, stakingCredential)
+import Ledger.Address
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript)
@@ -118,7 +119,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         _       -> traceError "Output does not have treasury datum"
 
       --Loan UTxO conditions defined below
-
+{-
       txOuts :: [TxOut]
       txOuts = txInfoOutputs info
 
@@ -130,13 +131,27 @@ treasuryValidator tparam tdatum tredeemer tcontext =
                       b   = addressStakingCredential add
 
       lOutputs :: [TxOut]
-      lOutputs = [op | op <- txOuts , (loanValHash pODatum, Just (stake1 pODatum)) == addrParse op]
+      lOutputs = [op | op <- txOuts , (txOutAddress op) == (pubKeyHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))]
+
 
       loanOutput :: TxOut
       loanOutput = case lOutputs of
         [o]     ->  o
+        []      -> traceError "No loan outputs!"
         _       ->  traceError "There must be exactly 1 loan output"
-      
+ -}
+      loanOutput :: TxOut
+      loanOutput =
+        let ins =
+              [ i
+                | i <- txInfoOutputs info,
+                  txOutAddress i == pubKeyHashAddress (loanValHash pODatum) (Just (stake1 pODatum))
+              ]
+         in case ins of
+              [o] -> o
+              _ -> traceError "expected exactly one loan output"   
+
+
       loanValue :: Value
       loanValue = txOutValue loanOutput
       
@@ -167,16 +182,19 @@ treasuryValidator tparam tdatum tredeemer tcontext =
 
       withdrawConditions :: Bool
       withdrawConditions = (llLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
+      
+      
+      
+      
+      
       --Deposit conditions
       depositConditions :: Bool
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
       --Update conditions
-      
-      updateAuthAddr :: PubKeyHash
-      updateAuthAddr = PubKeyHash { getPubKeyHash = "a98b930e7aa8c822666e0dca5442d000e128965cf7516e955af6486b" }
+
 
       updateConditions :: Bool
-      updateConditions = txSignedBy info updateAuthAddr
+      updateConditions = True   --Placeholder till the withdraw logic is formalized
 
 
 
