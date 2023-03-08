@@ -39,7 +39,7 @@ paramDatum = ParamDatum
   }
 
 updateRedeemer :: TreasuryRedeemer
-updateRedeemer = Update
+updateRedeemer = Withdraw
 
 
 writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
@@ -50,3 +50,4 @@ main :: IO ()
 main = do
       writeJSON "output/tPDatum.json" paramDatum
       writeJSON "output/tTDatum.json" testDatum
+      writeJSON "output/wR.json"      updateRedeemer

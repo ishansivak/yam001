@@ -11,13 +11,13 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Treasury.TreasuryValidator (validator) where
+module Treasury.TreasuryValidator (validator , trValidatorHash) where
 
 
 import Ledger (scriptHashAddress)
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
-import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript)
+import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
 import Plutus.V1.Ledger.Value
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
@@ -33,7 +33,8 @@ treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> Scrip
 treasuryValidator tparam tdatum tredeemer tcontext = 
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
-                    traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions
+                    traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
+                    traceIfFalse "Loan needs to be bigger than minLoan!"               minLoanCondition
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"      depositConditions
@@ -115,26 +116,33 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum :: ParamDatum
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
-        _       -> traceError "Output does not have treasury datum"
+        _       -> traceError "Output does not have param datum"
 
       --Loan UTxO conditions defined below
 
       txOuts :: [TxOut]
       txOuts = txInfoOutputs info
-
-      
+{-
+      loanOutputs :: [TxOut]
+      loanOutputs = [z | z <- txOuts , (pubKeyOutput z) == Just (loanValHash pODatum)]
 
       lOutputsPay :: [TxOut]
       lOutputsPay = [op | op <- txOuts , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
 
       loanOutput :: TxOut
-      loanOutput = case lOutputsPay of
+      loanOutput = case loanOutputs of
         [o]     ->  o
         _       ->  traceError "There must be exactly 1 loan output"
       
       loanValue :: Value
       loanValue = txOutValue loanOutput
-      
+      loanValues :: [Value]
+      loanValues = pubKeyOutputsAt (loanValHash pODatum) info
+-}
+
+      loanValue :: Value
+      loanValue = valuePaidTo info (loanValHash pODatum)
+
       adaAsset :: AssetClass
       adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
 
@@ -148,20 +156,23 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       usd1Asset = usd1 pODatum
 
       usd1Withdrawn :: Integer
-      usd1Withdrawn = (assetClassValueOf treasuryOutputValue usd1Asset) - (assetClassValueOf treasuryInputValue usd1Asset)
+      usd1Withdrawn = (assetClassValueOf treasuryInputValue usd1Asset) - (assetClassValueOf treasuryOutputValue usd1Asset)
 
       usd1Dec :: Integer
       usd1Dec = usd1decimal pODatum
       
       collateralCheck :: Bool
-      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = True--((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
 
       --Final formulation of withdraw spending conditions
+
+      minLoanCondition :: Bool
+      minLoanCondition = usd1Withdrawn >= (minLoan pODatum)
+
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
-      withdrawConditions :: Bool
-      withdrawConditions = (llLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
+      
       --Deposit conditions
       depositConditions :: Bool
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
@@ -195,3 +206,6 @@ typedValidator tp = go tp
 
 validator :: TreasuryParam -> Validator
 validator = validatorScript . typedValidator
+
+trValidatorHash :: TreasuryParam -> ValidatorHash
+trValidatorHash = validatorHash . typedValidator
