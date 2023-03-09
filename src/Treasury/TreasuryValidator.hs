@@ -34,7 +34,8 @@ treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> Scrip
 treasuryValidator tparam tdatum tredeemer tcontext = 
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
-                    traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions
+                    traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions &&
+                    traceIfFalse "The collateral isn't adequate!"                      collateralCheck
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"      depositConditions
@@ -116,10 +117,10 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum :: ParamDatum
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
-        _       -> traceError "Output does not have treasury datum"
+        _       -> traceError "Output does not have param datum"
 
       --Loan UTxO conditions defined below
-{-
+    {-
       txOuts :: [TxOut]
       txOuts = txInfoOutputs info
 
@@ -139,7 +140,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         [o]     ->  o
         []      -> traceError "No loan outputs!"
         _       ->  traceError "There must be exactly 1 loan output"
- -}
+    -}
       loanOutput :: TxOut
       loanOutput =
         let ins =
@@ -168,20 +169,20 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       usd1Asset = usd1 pODatum
 
       usd1Withdrawn :: Integer
-      usd1Withdrawn = (assetClassValueOf treasuryOutputValue usd1Asset) - (assetClassValueOf treasuryInputValue usd1Asset)
+      usd1Withdrawn = (assetClassValueOf treasuryInputValue usd1Asset) - (assetClassValueOf treasuryOutputValue usd1Asset)
 
       usd1Dec :: Integer
       usd1Dec = usd1decimal pODatum
       
       collateralCheck :: Bool
-      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum) * 60))
 
       --Final formulation of withdraw spending conditions
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
       withdrawConditions :: Bool
-      withdrawConditions = (llLocked == usd1Withdrawn) && (cblpLocked == usd1Withdrawn)
+      withdrawConditions = usd1Withdrawn >= minLoan pODatum
       
       
       
@@ -190,6 +191,8 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       --Deposit conditions
       depositConditions :: Bool
       depositConditions = False   --Placeholder till depositing to UTxO's is implemented
+      
+      
       --Update conditions
 
 
