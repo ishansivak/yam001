@@ -34,7 +34,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
-                    traceIfFalse "Loan needs to be bigger than minLoan!"               minLoanCondition
+                    traceIfFalse "minLoanCondition not met!"                           minLoanCondition
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"      depositConditions
@@ -119,29 +119,26 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         _       -> traceError "Output does not have param datum"
 
       --Loan UTxO conditions defined below
-
-      txOuts :: [TxOut]
-      txOuts = txInfoOutputs info
 {-
-      loanOutputs :: [TxOut]
-      loanOutputs = [z | z <- txOuts , (pubKeyOutput z) == Just (loanValHash pODatum)]
+      tOPs :: [TxOut]
+      tOPs = txInfoOutputs info
+
+      
 
       lOutputsPay :: [TxOut]
-      lOutputsPay = [op | op <- txOuts , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
+      lOutputsPay = [op | op <- tOPs , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
 
       loanOutput :: TxOut
-      loanOutput = case loanOutputs of
+      loanOutput = case lOutputsPay of
         [o]     ->  o
         _       ->  traceError "There must be exactly 1 loan output"
       
       loanValue :: Value
       loanValue = txOutValue loanOutput
-      loanValues :: [Value]
-      loanValues = pubKeyOutputsAt (loanValHash pODatum) info
 -}
 
       loanValue :: Value
-      loanValue = valuePaidTo info (loanValHash pODatum)
+      loanValue = valueLockedBy info (loanValHash pODatum)
 
       adaAsset :: AssetClass
       adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
@@ -162,12 +159,12 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       usd1Dec = usd1decimal pODatum
       
       collateralCheck :: Bool
-      collateralCheck = True--((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = True --((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
 
       --Final formulation of withdraw spending conditions
 
       minLoanCondition :: Bool
-      minLoanCondition = usd1Withdrawn >= (minLoan pODatum)
+      minLoanCondition = usd1Withdrawn < cblpLocked
 
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum

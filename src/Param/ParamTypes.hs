@@ -33,17 +33,17 @@ treasuryValHash (definite)
 finite interest repayment variable
 -}
 data ParamDatum = ParamDatum
-  { cRatio       :: Integer,   --6 digit CR e.g. 1.6 = 1600000
-    usdLL        :: Integer,
-    cblpLL       :: Integer,
-    stake1       :: PubKeyHash,
-    usd1         :: AssetClass,
-    usd1decimal  :: Integer,
-    minLoan      :: Integer,
-    maxLoan      :: Integer,
-    loanValHash  :: PubKeyHash,
-    arbValHash   :: PubKeyHash,
-    trValHash    :: PubKeyHash
+  { cRatio       :: !Integer,   --6 digit CR e.g. 1.6 = 1600000
+    usdLL        :: !Integer,
+    cblpLL       :: !Integer,
+    stake1       :: !PubKeyHash,
+    usd1         :: !AssetClass,
+    usd1decimal  :: !Integer,
+    minLoan      :: !Integer,
+    maxLoan      :: !Integer,
+    loanValHash  :: !ValidatorHash,
+    arbValHash   :: !PubKeyHash,
+    trValHash    :: !ValidatorHash
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -54,6 +54,7 @@ data ParamDatum = ParamDatum
 
 
 PlutusTx.unstableMakeIsData ''ParamDatum
+PlutusTx.makeLift ''ParamDatum
 
 data ParamTypes
 

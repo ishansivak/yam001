@@ -7,11 +7,11 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Treasury.TreasuryTypes
-  ( TreasuryParam (..),
-    TreasuryDatum (..),
-    TreasuryRedeemer (..),
-    TreasuryTypes,
+module Loan.LoanTypes
+  ( LoanParam (..),
+    LoanDatum (..),
+    LoanRedeemer (..),
+    LoanTypes,
     )
 where
 
@@ -27,38 +27,40 @@ import Prelude (Show (..))
 import qualified Prelude as Pr
 
 
-data TreasuryParam = TreasuryParam
+data LoanParam = LoanParam
   { cblpToken :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
-PlutusTx.makeLift ''TreasuryParam
+PlutusTx.makeLift ''LoanParam
 
 -- consider representing Issuer with a token, instead of PKH
-data TreasuryDatum = TreasuryDatum
-  { paramNFT  :: AssetClass
+data LoanDatum = LoanDatum
+  { usdLoanToken  :: AssetClass ,
+    usdAmount     :: Integer ,
+    paramNFT      :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
-
-instance Eq TreasuryDatum where
+{-
+instance Eq LoanDatum where
   {-# INLINEABLE (==) #-}
-  TreasuryDatum {paramNFT = a} == TreasuryDatum {paramNFT = a'} = (a == a')
+  LoanDatum {usdLoanToken = a} == LoanDatum {usdLoanToken = a'} = (a == a')
+-}
+
+
+PlutusTx.unstableMakeIsData ''LoanDatum
+PlutusTx.makeLift ''LoanDatum
 
 
 
-PlutusTx.unstableMakeIsData ''TreasuryDatum
-PlutusTx.makeLift ''TreasuryDatum
-
-
-
-data TreasuryRedeemer = Withdraw | Deposit | Update
+data LoanRedeemer = Withdraw | Update
   deriving (Show)
 
-PlutusTx.makeIsDataIndexed ''TreasuryRedeemer [('Withdraw, 0), ('Deposit, 1), ('Update, 2)]
-PlutusTx.makeLift ''TreasuryRedeemer
+PlutusTx.makeIsDataIndexed ''LoanRedeemer [('Withdraw, 0), ('Update, 1)]
+PlutusTx.makeLift ''LoanRedeemer
 
-data TreasuryTypes
+data LoanTypes
 
-instance ValidatorTypes TreasuryTypes where
-  type DatumType TreasuryTypes = TreasuryDatum
-  type RedeemerType TreasuryTypes = TreasuryRedeemer
+instance ValidatorTypes LoanTypes where
+  type DatumType LoanTypes = LoanDatum
+  type RedeemerType LoanTypes = LoanRedeemer

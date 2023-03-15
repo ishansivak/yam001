@@ -1,0 +1,8 @@
+      loanOutputs :: [TxOut]
+      loanOutputs = [z | z <- txOuts , (pubKeyOutput z) == Just (loanValHash pODatum)]
+
+      lOutputsPay :: [TxOut]
+      lOutputsPay = [op | op <- txOuts , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
+
+      loanValue :: Value
+      loanValue = valuePaidTo info (loanValHash pODatum)
