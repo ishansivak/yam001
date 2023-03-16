@@ -65,7 +65,8 @@ paramDatum = ParamDatum
     maxLoan      =   1000,
     loanValHash  =   Ln.lnValidatorHash lp ,
     arbValHash   =   pkh1,
-    trValHash    =   Tr.trValidatorHash tp
+    trValHash    =   Tr.trValidatorHash tp ,
+    trStateToken =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken"
   }
 
 updateRedeemer :: TreasuryRedeemer

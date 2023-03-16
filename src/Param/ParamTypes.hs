@@ -43,7 +43,8 @@ data ParamDatum = ParamDatum
     maxLoan      :: !Integer,
     loanValHash  :: !ValidatorHash,
     arbValHash   :: !PubKeyHash,
-    trValHash    :: !ValidatorHash
+    trValHash    :: !ValidatorHash,
+    trStateToken :: !AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

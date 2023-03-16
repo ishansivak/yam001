@@ -26,6 +26,7 @@ import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
 import Treasury.TreasuryTypes
+import qualified Loan.LoanTypes as Ln
 import Param.ParamTypes
 
 {-# INLINEABLE treasuryValidator #-}
@@ -34,11 +35,12 @@ treasuryValidator tparam tdatum tredeemer tcontext =
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
-                    traceIfFalse "minLoanCondition not met!"                           minLoanCondition
+                    traceIfFalse "minLoanCondition not met!"                           minLoanCondition &&
+                    traceIfFalse "State token must be present in input and output!"    stateTokenCondition
 
         --Withdrawal conditions above
-        Deposit  -> traceIfFalse "Deposit conditions not met!"      depositConditions
-        Update   -> traceIfFalse "Update not authorized!"           updateConditions
+        Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
+        Update   -> traceIfFalse "Update not authorized!"                              updateConditions
     where
 
       --Generally useful primitive data like TxInfo, continuing outputs,etc
@@ -92,6 +94,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       treasuryOutputValue :: Value
       treasuryOutputValue = txOutValue ownOutput
 
+      
 
       --Making sure the protocol param UTxO is referenced
       hasNFT :: [TxOut] -> TxOut
@@ -117,6 +120,10 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
         _       -> traceError "Output does not have param datum"
+
+      stateTokenCondition :: Bool
+      stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken pODatum)) &&
+                            (1 == assetClassValueOf treasuryOutputValue (trStateToken pODatum))  
 
       --Loan UTxO conditions defined below
 {-
@@ -159,12 +166,12 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       usd1Dec = usd1decimal pODatum
       
       collateralCheck :: Bool
-      collateralCheck = True --((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
 
       --Final formulation of withdraw spending conditions
 
       minLoanCondition :: Bool
-      minLoanCondition = usd1Withdrawn < cblpLocked
+      minLoanCondition = usd1Withdrawn >= (minLoan pODatum) * usd1Dec
 
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
@@ -177,7 +184,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
 
       updateConditions :: Bool
-      updateConditions = True
+      updateConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)
 
 
 
