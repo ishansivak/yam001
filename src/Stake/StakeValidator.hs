@@ -48,20 +48,21 @@ import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (FilePath, IO, Show (..))
 import qualified Prelude as Pr
 
-data CBLPStakeParam = CBLPStakeParam
+data CBLPStakeParams = CBLPStakeParams
   { stakeNFT :: !AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
-PlutusTx.unstableMakeIsData ''CBLPStakeParam
-PlutusTx.makeLift ''CBLPStakeParam
+PlutusTx.unstableMakeIsData ''CBLPStakeParams
+PlutusTx.makeLift ''CBLPStakeParams
 
 
 {-# INLINEABLE cblpStakeValidator #-}
-cblpStakeValidator :: CBLPStakeParam -> Bool -> PlutusV2.ScriptContext -> Bool
-cblpStakeValidator amp mORb ctx = case mORb of
-    True            ->           traceIfFalse "Minting of loan token not approved"     mintCondition
-    False           ->           traceIfFalse "Burning of loan token not approved"     burnCondition
+cblpStakeValidator :: CBLPStakeParams -> () -> PlutusV2.ScriptContext -> Bool
+cblpStakeValidator cblpSP () ctx = case PlutusV2.scriptContextPurpose ctx of
+    PlutusV2.Certifying _            -> traceIfFalse "Stake NFT not present in certifying tx!"     stakeCondition
+    PlutusV2.Rewarding _             -> traceIfFalse "Stake NFT not present in rewarding tx!"      stakeCondition 
+    _                                -> False
 
   
   
@@ -70,36 +71,56 @@ cblpStakeValidator amp mORb ctx = case mORb of
     info :: PlutusV2.TxInfo
     info = PlutusV2.scriptContextTxInfo ctx
 
+    inputValue :: Value
+    inputValue = PlutusV2.valueSpent info
 
-    mintCondition :: Bool
-    mintCondition = True
+    sNFT :: AssetClass
+    sNFT = stakeNFT cblpSP
+
+    stakeNFTAmount :: Integer
+    stakeNFTAmount = assetClassValueOf inputValue sNFT
+
+    stakeCondition :: Bool
+    stakeCondition = stakeNFTAmount == 1
     
-    burnCondition :: Bool
-    burnCondition = True
 
 {-
-    As a Minting Policy
--}
+    As a Staking Script
 
-stakeV2 :: PSU.V2.StakeValidator
-stakeV2 = PlutusV2.StakeValidator $ PlutusV2.fromCompiledCode ($$(PlutusTx.compile [||wrap||]))
+
+
+stakeV2 :: CBLPStakeParams -> PSU.V2.StakeValidator
+stakeV2 csp = PlutusV2.StakeValidator $ PlutusV2.fromCompiledCode ($$(PlutusTx.compile [||wrap||]))
   where
-    wrap amp = PSU.V2.mkUntypedStakeValidator $ cblpStakeValidator (PlutusTx.unsafeFromBuiltinData amp)
+    wrap csp = PSU.V2.mkUntypedStakeValidator $ cblpStakeValidator (PlutusTx.unsafeFromBuiltinData csp)
+-}
+policy :: CBLPStakeParams -> PSU.V2.StakeValidator
+policy cblpPRM = PlutusV2.mkStakeValidatorScript $
+    $$(PlutusTx.compile [|| \prm' -> PSU.V2.mkUntypedStakeValidator $ cblpStakeValidator prm' ||])
+    `PlutusTx.applyCode`
+    PlutusTx.liftCode cblpPRM
 
+tempStakeParam :: CBLPStakeParams
+tempStakeParam = CBLPStakeParams {
+    stakeNFT = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
+}
 
-
+stakeV2temp :: PSU.V2.StakeValidator
+stakeV2temp = policy tempStakeParam
 {-
     As a Script
 -}
 
+
+
 scriptV2 :: PlutusV2.Script
-scriptV2 = PlutusV2.unStakeValidatorScript stakeV2
+scriptV2 = PlutusV2.unStakeValidatorScript stakeV2temp
 
 {-
 ValidatorHash
 -}
-stakeVHash :: PlutusV2.ValidatorHash
-stakeVHash = PV2.validatorHash (PlutusV2.Validator scriptV2) 
+stakeVHash :: PlutusV2.StakeValidatorHash
+stakeVHash = PV2.stakeValidatorHash stakeV2temp
 
 {-
     As a Short Byte String

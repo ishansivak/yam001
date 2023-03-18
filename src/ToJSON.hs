@@ -27,6 +27,7 @@ import            Treasury.TreasuryCompiler
 import            Loan.LoanCompiler
 import  qualified Treasury.TreasuryValidator as Tr
 import  qualified Loan.LoanValidator         as Ln
+import  qualified Stake.StakeValidator       as Sv
 
 
 loanDatum :: LnD.LoanDatum
@@ -58,7 +59,7 @@ paramDatum = ParamDatum
   { cRatio       =   60,   --6 digit CR e.g. 1.6 = 1600000
     usdLL        =   1000000,
     cblpLL       =   10000,
-    stake1       =   "4f7ff7e6fcf93cdf36aabbc0407d252f67003841389e37fe83ef381c",
+    stake1       =   Sv.stakeVHash,
     usd1         =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
     usd1decimal  =   1000000,
     minLoan      =   100,

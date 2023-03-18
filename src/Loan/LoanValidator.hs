@@ -36,6 +36,11 @@ loanValidator lparam ldatum lredeemer lcontext =
         Withdraw       ->    traceIfFalse "Loan repayment conditions not met!"     loanConditions
         Update         ->    traceIfFalse "Update conditions unmet!"               loanUpdateConditions
     where
+        info :: TxInfo
+        info = scriptContextTxInfo lcontext
+
+        
+
         loanConditions :: Bool
         loanConditions = True
 

@@ -14,7 +14,7 @@
 module Treasury.TreasuryValidator (validator , trValidatorHash) where
 
 
-import Ledger (scriptHashAddress)
+import Ledger (scriptHashAddress, scriptValidatorHashAddress)
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
@@ -36,7 +36,8 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
                     traceIfFalse "minLoanCondition not met!"                           minLoanCondition &&
-                    traceIfFalse "State token must be present in input and output!"    stateTokenCondition
+                    traceIfFalse "State token must be present in input and output!"    stateTokenCondition &&
+                    traceIfFalse "The loan datum is not correct!"                      loanDatumCondition
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
@@ -126,11 +127,11 @@ treasuryValidator tparam tdatum tredeemer tcontext =
                             (1 == assetClassValueOf treasuryOutputValue (trStateToken pODatum))  
 
       --Loan UTxO conditions defined below
-{-
       tOPs :: [TxOut]
       tOPs = txInfoOutputs info
 
       
+{-
 
       lOutputsPay :: [TxOut]
       lOutputsPay = [op | op <- tOPs , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
@@ -142,10 +143,28 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       loanValue :: Value
       loanValue = txOutValue loanOutput
--}
 
       loanValue :: Value
       loanValue = valueLockedBy info (loanValHash pODatum)
+-}
+      loanOutput :: TxOut
+      loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))] of
+        [o]     -> o
+        _       -> traceError "Expected exactly one loan output"
+      
+      toLoanDatum :: OutputDatum -> Maybe Ln.LoanDatum
+      toLoanDatum ld = do
+        case ld of
+          OutputDatum d -> fromBuiltinData (getDatum d)
+          _             -> traceError "Datum not found"
+
+      lnDatum :: Ln.LoanDatum
+      lnDatum = case toLoanDatum $ txOutDatum loanOutput of
+        Just lnD -> lnD
+        _        -> traceError "Loan output does not have loan datum"
+
+      loanValue :: Value
+      loanValue = txOutValue loanOutput    
 
       adaAsset :: AssetClass
       adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
@@ -173,8 +192,16 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       minLoanCondition :: Bool
       minLoanCondition = usd1Withdrawn >= (minLoan pODatum) * usd1Dec
 
+      loanDatumCondition :: Bool
+      loanDatumCondition = ((Ln.usdLoanToken lnDatum) == usd1Asset) &&
+                           ((Ln.usdAmount lnDatum) == usd1Withdrawn) &&
+                           ((Ln.paramNFT lnDatum) == prmAsset)
+
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
+
+      mintNFTCondition :: Bool
+      mintNFTCondition = True
 
       
       --Deposit conditions

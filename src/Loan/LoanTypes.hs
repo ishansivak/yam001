@@ -36,9 +36,9 @@ PlutusTx.makeLift ''LoanParam
 
 -- consider representing Issuer with a token, instead of PKH
 data LoanDatum = LoanDatum
-  { usdLoanToken  :: AssetClass ,
-    usdAmount     :: Integer ,
-    paramNFT      :: AssetClass
+  { usdLoanToken  :: !AssetClass ,
+    usdAmount     :: !Integer ,
+    paramNFT      :: !AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 {-

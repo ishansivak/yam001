@@ -36,7 +36,7 @@ PlutusTx.makeLift ''TreasuryParam
 
 -- consider representing Issuer with a token, instead of PKH
 data TreasuryDatum = TreasuryDatum
-  { paramNFT  :: AssetClass
+  { paramNFT  :: !AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
