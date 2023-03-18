@@ -52,6 +52,7 @@ library
                         Loan.LoanCompiler
                         Mint.MintValidator
                         Stake.StakeValidator
+                        Arb.ArbValidator
                         Param.ParamTypes
                         ToJSON
 

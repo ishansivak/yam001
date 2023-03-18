@@ -28,6 +28,7 @@ import            Loan.LoanCompiler
 import  qualified Treasury.TreasuryValidator as Tr
 import  qualified Loan.LoanValidator         as Ln
 import  qualified Stake.StakeValidator       as Sv
+import  qualified Arb.ArbValidator           as Ar
 
 
 loanDatum :: LnD.LoanDatum
@@ -65,7 +66,7 @@ paramDatum = ParamDatum
     minLoan      =   100,
     maxLoan      =   1000,
     loanValHash  =   Ln.lnValidatorHash lp ,
-    arbValHash   =   pkh1,
+    arbValHash   =   Ar.arbVHash,
     trValHash    =   Tr.trValidatorHash tp ,
     trStateToken =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken"
   }

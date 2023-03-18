@@ -42,7 +42,7 @@ data ParamDatum = ParamDatum
     minLoan      :: !Integer,
     maxLoan      :: !Integer,
     loanValHash  :: !ValidatorHash,
-    arbValHash   :: !PubKeyHash,
+    arbValHash   :: !ValidatorHash,
     trValHash    :: !ValidatorHash,
     trStateToken :: !AssetClass
   }
