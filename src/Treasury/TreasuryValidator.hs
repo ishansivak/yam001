@@ -152,16 +152,6 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         [o]     -> o
         _       -> traceError "Expected exactly one loan output"
       
-      toLoanDatum :: OutputDatum -> Maybe Ln.LoanDatum
-      toLoanDatum ld = do
-        case ld of
-          OutputDatum d -> fromBuiltinData (getDatum d)
-          _             -> traceError "Datum not found"
-
-      lnDatum :: Ln.LoanDatum
-      lnDatum = case toLoanDatum $ txOutDatum loanOutput of
-        Just lnD -> lnD
-        _        -> traceError "Loan output does not have loan datum"
 
       loanValue :: Value
       loanValue = txOutValue loanOutput    
@@ -193,9 +183,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       minLoanCondition = usd1Withdrawn >= (minLoan pODatum) * usd1Dec
 
       loanDatumCondition :: Bool
-      loanDatumCondition = ((Ln.usdLoanToken lnDatum) == usd1Asset) &&
-                           ((Ln.usdAmount lnDatum) == usd1Withdrawn) &&
-                           ((Ln.paramNFT lnDatum) == prmAsset)
+      loanDatumCondition = True
 
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum

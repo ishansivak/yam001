@@ -46,6 +46,8 @@ import qualified PlutusTx
 import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (FilePath, IO, Show (..))
 import qualified Prelude as Pr
+import Param.ParamTypes
+import qualified Loan.LoanTypes as Ln
 
 data CBLPMintParams = CBLPMintParams
   { paramNFT :: !AssetClass
@@ -57,10 +59,10 @@ PlutusTx.makeLift ''CBLPMintParams
 
 
 {-# INLINEABLE cblpMintPolicy #-}
-cblpMintPolicy :: CBLPMintParams -> Bool -> PlutusV2.ScriptContext -> Bool
-cblpMintPolicy amp mORb ctx = case mORb of
-    True            ->           traceIfFalse "Minting of loan token not approved"     mintCondition
-    False           ->           traceIfFalse "Burning of loan token not approved"     burnCondition
+cblpMintPolicy :: CBLPMintParams -> () -> PlutusV2.ScriptContext -> Bool
+cblpMintPolicy amp mORb ctx = case PlutusV2.scriptContextPurpose ctx of
+  PlutusV2.Minting cs      -> mintOrBurn
+  _                        -> False
 
   
   
@@ -69,6 +71,61 @@ cblpMintPolicy amp mORb ctx = case mORb of
     info :: PlutusV2.TxInfo
     info = PlutusV2.scriptContextTxInfo ctx
 
+    references :: [TxInInfo]
+    references = PlutusV2.txInfoReferenceInputs info
+
+    tOPs :: [TxOut]
+    tOPs = txInfoOutputs info
+
+    tIPs :: [TxOut]
+    tIPs = txInInfoResolved (txInfoInputs info)
+
+
+    ownCS :: PlutusV2.CurrencySymbol
+    ownCS = PlutusV2.ownCurrencySymbol ctx
+
+    prmAsset :: AssetClass
+    prmAsset = paramNFT amp
+
+    hasNFT :: [TxOut] -> TxOut
+    hasNFT outs = case f of
+                    [o] -> o
+                    _   -> traceError "Exactly one param NFT input needed"
+                  where
+                    f = [x | x <- outs , 1 == (assetClassValueOf (txOutValue x) prmAsset)]
+      
+      
+    paramOutput :: TxOut
+    paramOutput = hasNFT [txInInfoResolved y | y <- references]  
+
+    pDatum :: OutputDatum -> Maybe ParamDatum
+    pDatum md = do 
+      case md of
+        OutputDatum d -> fromBuiltinData (getDatum d)
+        _             -> traceError "Datum not found"
+      
+    pODatum :: ParamDatum
+    pODatum = case pDatum $ txOutDatum paramOutput of
+      Just td -> td
+      _       -> traceError "Output does not have param datum"
+
+    loanOutput :: TxOut
+    loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))] of
+      [o]     -> o
+      _       -> traceError "Expected exactly one loan output"
+
+    toLoanDatum :: OutputDatum -> Maybe Ln.LoanDatum
+    toLoanDatum ld = do
+      case ld of
+        OutputDatum d -> fromBuiltinData (getDatum d)
+        _             -> traceError "Datum not found"
+    
+    trInpValue :: Value
+
+    lnDatum :: Ln.LoanDatum
+    lnDatum = case toLoanDatum $ txOutDatum loanOutput of
+      Just lnD -> lnD
+      _        -> traceError "Loan output does not have loan datum"
 
     mintCondition :: Bool
     mintCondition = False
@@ -114,4 +171,4 @@ serialisedScriptV2 :: PlutusScript PlutusScriptV2
 serialisedScriptV2 = PlutusScriptSerialised scriptSBSV2
 
 writeSerialisedScriptV2 :: IO ()
-writeSerialisedScriptV2 = void $ writeFileTextEnvelope "output/test-policy.plutus" Nothing serialisedScriptV2
+writeSerialisedScriptV2 = void $ writeFileTextEnvelope "output/mint1.plutus" Nothing serialisedScriptV2
