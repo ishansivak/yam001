@@ -48,8 +48,8 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       info :: TxInfo
       info = scriptContextTxInfo tcontext
 
-      paramAsset :: AssetClass
-      paramAsset = cblpToken tparam
+      cblpAsset :: AssetClass
+      cblpAsset = cblpToken tparam
 
       references :: [TxInInfo]
       references = txInfoReferenceInputs info
@@ -173,7 +173,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       llLocked = assetClassValueOf loanValue adaAsset   --Amount of lovelace locked by contract
 
       cblpLocked :: Integer
-      cblpLocked = assetClassValueOf loanValue paramAsset  --Amount of CBLP *10^6  (decimal point)
+      cblpLocked = assetClassValueOf loanValue cblpAsset  --Amount of CBLP *10^6  (decimal point)
 
       usd1Asset :: AssetClass
       usd1Asset = usd1 pODatum
@@ -206,7 +206,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       --Deposit conditions
       depositConditions :: Bool
-      depositConditions = False   --Placeholder till depositing to UTxO's is implemented
+      depositConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)   --Placeholder till depositing to UTxO's is implemented
       --Update conditions
       
 

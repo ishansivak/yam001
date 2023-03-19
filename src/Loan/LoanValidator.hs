@@ -14,7 +14,7 @@
 module Loan.LoanValidator (lnValidator , lnValidatorHash) where
 
 
-import Ledger (scriptHashAddress)
+import Ledger (scriptHashAddress, scriptValidatorHashAddress)
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
@@ -39,10 +39,96 @@ loanValidator lparam ldatum lredeemer lcontext =
         info :: TxInfo
         info = scriptContextTxInfo lcontext
 
+        cblpAsset :: AssetClass
+        cblpAsset = cblpToken lparam
+
+        references :: [TxInInfo]
+        references = txInfoReferenceInputs info
+
+        ownInput :: TxOut
+        ownInput = case findOwnInput lcontext of
+          Nothing -> traceError "No inputs found"
+          Just i -> txInInfoResolved i
+
+        ownOutputZero :: Bool
+        ownOutputZero = case getContinuingOutputs lcontext of
+          [] -> True  --There should be no loan outputs
+          _  -> False --In case there are any outputs, tx is invalid.
         
+        lDatum :: OutputDatum -> Maybe LoanDatum
+        lDatum md = do 
+          case md of
+            OutputDatum d -> fromBuiltinData (getDatum d)
+            _             -> traceError "Datum not found"
+        
+        loanInputDatum :: LoanDatum
+        loanInputDatum = case lDatum $ txOutDatum ownInput of
+          Just ld  ->  ld
+          _        ->  traceError "Loan datum not found!"
+        
+        prmAsset :: AssetClass
+        prmAsset = paramNFT loanInputDatum
+
+
+        --Looking for param UTxO using the param state token
+        hasNFT :: [TxOut] -> TxOut
+        hasNFT outs = case f of
+                        [o] -> o
+                        _   -> traceError "Exactly one param NFT input needed"
+                      where
+                        f = [x | x <- outs , 1 == (assetClassValueOf (txOutValue x) prmAsset)]
+      
+        paramOutput :: TxOut
+        paramOutput = hasNFT [txInInfoResolved y | y <- references]
+
+         --Fetching and using param datum
+        pDatum :: OutputDatum -> Maybe ParamDatum
+        pDatum md = do 
+          case md of
+            OutputDatum d -> fromBuiltinData (getDatum d)
+            _             -> traceError "Datum not found"
+      
+        pODatum :: ParamDatum
+        pODatum = case pDatum $ txOutDatum paramOutput of
+          Just td -> td
+          _       -> traceError "Output does not have param datum"
+
+
+
+
+
+        --Arbitrage contract output search
+        arbHash :: ValidatorHash
+        arbHash = arbValHash pODatum
+
+        stakeH :: StakeValidatorHash
+        stakeH = stake1 pODatum
+
+        tOPs :: [TxOut]
+        tOPs = txInfoOutputs info
+
+        arbOutput :: TxOut
+        arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (arbValHash pODatum) (Just (stake1 pODatum)))] of
+          [o]    -> o
+          _      -> traceError "exactly one arb output expected!"
+
+        arbValue :: Value
+        arbValue = txOutValue arbOutput
+
+        usdAsset :: AssetClass
+        usdAsset = usd1 pODatum
+
+        usdDec :: Integer
+        usdDec = usd1decimal pODatum
+
+        arbCondition :: Bool
+        arbCondition = (assetClassValueOf arbValue usdAsset) * 100 >= (usdAmount loanInputDatum) * 110
+        
+        burnCondition :: Bool
+        burnCondition = True
 
         loanConditions :: Bool
-        loanConditions = True
+        loanConditions = ownOutputZero && arbCondition
 
         loanUpdateConditions :: Bool
         loanUpdateConditions = True

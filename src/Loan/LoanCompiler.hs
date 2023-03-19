@@ -28,5 +28,5 @@ lp = LoanParam { cblpToken = Plutus.V1.Ledger.Value.assetClass "16b1a90ae98adfc9
 
 writeProjectLoanScript :: IO (Either (FileError ()) ())
 writeProjectLoanScript =
-  writeValidator "output/loan001.plutus" $
+  writeValidator "output/loan1.plutus" $
     Loan.lnValidator $ lp

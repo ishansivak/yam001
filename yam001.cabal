@@ -53,6 +53,7 @@ library
                         Mint.MintValidator
                         Stake.StakeValidator
                         Arb.ArbValidator
+                        Arb.ArbCompiler
                         Param.ParamTypes
                         ToJSON
 

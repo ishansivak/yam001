@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Arb.ArbValidator (arbVHash) where
+module Arb.ArbValidator (arbVHash, validator) where
 
 import Plutus.V2.Ledger.Api (BuiltinData, Validator, mkValidatorScript, ValidatorHash)
 import PlutusTx (compile, applyCode, liftCode, unstableMakeIsData, makeLift)

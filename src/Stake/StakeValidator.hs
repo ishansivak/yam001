@@ -137,4 +137,4 @@ serialisedScriptV2 :: PlutusScript PlutusScriptV2
 serialisedScriptV2 = PlutusScriptSerialised scriptSBSV2
 
 writeSerialisedScriptV2 :: IO ()
-writeSerialisedScriptV2 = void $ writeFileTextEnvelope "output/test-policy.plutus" Nothing serialisedScriptV2
+writeSerialisedScriptV2 = void $ writeFileTextEnvelope "output/stake1.plutus" Nothing serialisedScriptV2
