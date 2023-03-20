@@ -25,5 +25,5 @@ writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file 
 
 writeProjectLoanScript :: IO (Either (FileError ()) ())
 writeProjectLoanScript =
-  writeValidator "output/arb1.plutus" $
+  writeValidator "output/arbXP.plutus" $
     Ar.validator

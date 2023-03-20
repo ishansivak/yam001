@@ -28,7 +28,12 @@ import qualified Prelude as Pr
 
 
 data LoanParam = LoanParam
-  { cblpToken :: AssetClass
+  { 
+    cblpToken    :: AssetClass,
+    stake1       :: StakeValidatorHash,  --tr , ln
+    usd1         :: AssetClass,          --tr , ln
+    usd1decimal  :: Integer,             --tr , ln
+    arbValHash   :: ValidatorHash
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -36,9 +41,9 @@ PlutusTx.makeLift ''LoanParam
 
 -- consider representing Issuer with a token, instead of PKH
 data LoanDatum = LoanDatum
-  { usdLoanToken  :: !AssetClass ,
-    usdAmount     :: !Integer ,
-    paramNFT      :: !AssetClass
+  { 
+    usdAmount     :: Integer ,
+    paramNFT      :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 {-

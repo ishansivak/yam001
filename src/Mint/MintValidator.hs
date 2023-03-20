@@ -61,7 +61,7 @@ PlutusTx.makeLift ''CBLPMintParams
 {-# INLINEABLE cblpMintPolicy #-}
 cblpMintPolicy :: CBLPMintParams -> () -> PlutusV2.ScriptContext -> Bool
 cblpMintPolicy amp mORb ctx = case PlutusV2.scriptContextPurpose ctx of
-  PlutusV2.Minting cs      -> mintOrBurn
+  PlutusV2.Minting cs      -> mintCondition
   _                        -> False
 
   
@@ -70,7 +70,7 @@ cblpMintPolicy amp mORb ctx = case PlutusV2.scriptContextPurpose ctx of
   where
     info :: PlutusV2.TxInfo
     info = PlutusV2.scriptContextTxInfo ctx
-
+{-
     references :: [TxInInfo]
     references = PlutusV2.txInfoReferenceInputs info
 
@@ -126,12 +126,13 @@ cblpMintPolicy amp mORb ctx = case PlutusV2.scriptContextPurpose ctx of
     lnDatum = case toLoanDatum $ txOutDatum loanOutput of
       Just lnD -> lnD
       _        -> traceError "Loan output does not have loan datum"
+-}
 
     mintCondition :: Bool
-    mintCondition = False
+    mintCondition = True
     
     burnCondition :: Bool
-    burnCondition = False
+    burnCondition = True
 
 {-
     As a Minting Policy

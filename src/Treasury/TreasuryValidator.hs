@@ -75,9 +75,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       --treasury  datum of ownInput and ownOutput
       treasuryInputDatum :: TreasuryDatum
-      treasuryInputDatum = case tDatum $ txOutDatum ownInput of
-        Just td -> td
-        _       -> traceError "Input does not have treasury datum"
+      treasuryInputDatum = tdatum
       
       prmAsset :: AssetClass
       prmAsset = paramNFT treasuryInputDatum
@@ -123,8 +121,8 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         _       -> traceError "Output does not have param datum"
 
       stateTokenCondition :: Bool
-      stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken pODatum)) &&
-                            (1 == assetClassValueOf treasuryOutputValue (trStateToken pODatum))  
+      stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken tparam)) &&
+                            (1 == assetClassValueOf treasuryOutputValue (trStateToken tparam))  
 
       --Loan UTxO conditions defined below
       tOPs :: [TxOut]
@@ -148,7 +146,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       loanValue = valueLockedBy info (loanValHash pODatum)
 -}
       loanOutput :: TxOut
-      loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))] of
+      loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash tparam) (Just (stake1 tparam)))] of
         [o]     -> o
         _       -> traceError "Expected exactly one loan output"
       
@@ -166,13 +164,13 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       cblpLocked = assetClassValueOf loanValue cblpAsset  --Amount of CBLP *10^6  (decimal point)
 
       usd1Asset :: AssetClass
-      usd1Asset = usd1 pODatum
+      usd1Asset = usd1 tparam
 
       usd1Withdrawn :: Integer
       usd1Withdrawn = (assetClassValueOf treasuryInputValue usd1Asset) - (assetClassValueOf treasuryOutputValue usd1Asset)
 
       usd1Dec :: Integer
-      usd1Dec = usd1decimal pODatum
+      usd1Dec = usd1decimal tparam
       
       collateralCheck :: Bool
       collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
@@ -180,7 +178,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       --Final formulation of withdraw spending conditions
 
       minLoanCondition :: Bool
-      minLoanCondition = usd1Withdrawn >= (minLoan pODatum) * usd1Dec
+      minLoanCondition = usd1Withdrawn >= (minLoan tparam) * usd1Dec
 
       loanDatumCondition :: Bool
       loanDatumCondition = True

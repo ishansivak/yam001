@@ -28,7 +28,16 @@ import qualified Prelude as Pr
 
 
 data TreasuryParam = TreasuryParam
-  { cblpToken :: AssetClass
+  { 
+    cblpToken    :: AssetClass,
+    cRatio       :: Integer,             --tr/par
+    stake1       :: StakeValidatorHash,  --tr , ln
+    usd1         :: AssetClass,          --tr , ln
+    usd1decimal  :: Integer,             --tr , ln
+    minLoan      :: Integer,             --tr
+    maxLoan      :: Integer,             --tr
+    loanValHash  :: ValidatorHash,       --tr
+    trStateToken :: AssetClass           --tr
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

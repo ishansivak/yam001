@@ -33,8 +33,7 @@ import  qualified Arb.ArbValidator           as Ar
 
 loanDatum :: LnD.LoanDatum
 loanDatum = LnD.LoanDatum {
-    LnD.usdLoanToken  =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
-    LnD.usdAmount     =  1000 ,
+    LnD.usdAmount     =  100000000 ,
     LnD.paramNFT      =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
 }
 
@@ -57,18 +56,11 @@ pkh1 = Lr.pubKeyHash myPubKey
 
 paramDatum :: ParamDatum
 paramDatum = ParamDatum
-  { cRatio       =   60,   --6 digit CR e.g. 1.6 = 1600000
+  { 
     usdLL        =   1000000,
     cblpLL       =   10000,
-    stake1       =   Sv.stakeVHash,
-    usd1         =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
-    usd1decimal  =   1000000,
-    minLoan      =   100,
-    maxLoan      =   1000,
-    loanValHash  =   Ln.lnValidatorHash lp ,
-    arbValHash   =   Ar.arbVHash,
-    trValHash    =   Tr.trValidatorHash tp ,
-    trStateToken =   assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken"
+    trValHash    =   Tr.trValidatorHash tp,
+    upBool       =   False  
   }
 
 updateRedeemer :: TreasuryRedeemer
@@ -81,7 +73,7 @@ writeJSON file = LBS.writeFile file . encode . scriptDataToJson ScriptDataJsonDe
 
 main :: IO ()
 main = do
-      writeJSON "output/newParam.json" paramDatum
-      writeJSON "output/tTDatum.json" testDatum
+      writeJSON "output/paramXP.json" paramDatum
+      writeJSON "output/trXP.json" testDatum
       writeJSON "output/wR.json"      updateRedeemer
-      writeJSON "output/lnDatum.json" loanDatum
+      writeJSON "output/lnXP.json" loanDatum

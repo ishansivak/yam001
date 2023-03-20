@@ -62,9 +62,7 @@ loanValidator lparam ldatum lredeemer lcontext =
             _             -> traceError "Datum not found"
         
         loanInputDatum :: LoanDatum
-        loanInputDatum = case lDatum $ txOutDatum ownInput of
-          Just ld  ->  ld
-          _        ->  traceError "Loan datum not found!"
+        loanInputDatum = ldatum
         
         prmAsset :: AssetClass
         prmAsset = paramNFT loanInputDatum
@@ -99,16 +97,16 @@ loanValidator lparam ldatum lredeemer lcontext =
 
         --Arbitrage contract output search
         arbHash :: ValidatorHash
-        arbHash = arbValHash pODatum
+        arbHash = arbValHash lparam
 
         stakeH :: StakeValidatorHash
-        stakeH = stake1 pODatum
+        stakeH = stake1 lparam
 
         tOPs :: [TxOut]
         tOPs = txInfoOutputs info
 
         arbOutput :: TxOut
-        arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (arbValHash pODatum) (Just (stake1 pODatum)))] of
+        arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (arbValHash lparam) (Just (stake1 lparam)))] of
           [o]    -> o
           _      -> traceError "exactly one arb output expected!"
 
@@ -116,10 +114,10 @@ loanValidator lparam ldatum lredeemer lcontext =
         arbValue = txOutValue arbOutput
 
         usdAsset :: AssetClass
-        usdAsset = usd1 pODatum
+        usdAsset = usd1 lparam
 
         usdDec :: Integer
-        usdDec = usd1decimal pODatum
+        usdDec = usd1decimal lparam
 
         arbCondition :: Bool
         arbCondition = (assetClassValueOf arbValue usdAsset) * 100 >= (usdAmount loanInputDatum) * 110

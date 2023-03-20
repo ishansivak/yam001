@@ -33,18 +33,11 @@ treasuryValHash (definite)
 finite interest repayment variable
 -}
 data ParamDatum = ParamDatum
-  { cRatio       :: Integer,             --tr/par
+  { 
     usdLL        :: Integer,             --oracle
     cblpLL       :: Integer,             --oracle
-    stake1       :: StakeValidatorHash,  --tr , ln
-    usd1         :: AssetClass,          --tr , ln
-    usd1decimal  :: Integer,             --tr , ln
-    minLoan      :: Integer,             --tr
-    maxLoan      :: Integer,             --tr
-    loanValHash  :: ValidatorHash,       --tr
-    arbValHash   :: ValidatorHash,       --ln
     trValHash    :: ValidatorHash,       --arb
-    trStateToken :: AssetClass           --tr
+    upBool       :: Bool
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
