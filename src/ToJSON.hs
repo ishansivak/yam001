@@ -34,7 +34,8 @@ import  qualified Arb.ArbValidator           as Ar
 loanDatum :: LnD.LoanDatum
 loanDatum = LnD.LoanDatum {
     LnD.usdAmount     =  100000000 ,
-    LnD.paramNFT      =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
+    LnD.paramNFT      =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken" ,
+    LnD.loanToken     =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "txid"       
 }
 
 testDatum :: TreasuryDatum
@@ -74,6 +75,6 @@ writeJSON file = LBS.writeFile file . encode . scriptDataToJson ScriptDataJsonDe
 main :: IO ()
 main = do
       writeJSON "output/paramXP.json" paramDatum
-      writeJSON "output/trXP.json" testDatum
+      writeJSON "output/trXP.json"    testDatum
       writeJSON "output/wR.json"      updateRedeemer
-      writeJSON "output/lnXP.json" loanDatum
+      writeJSON "output/lnXP.json"    loanDatum

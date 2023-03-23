@@ -37,7 +37,8 @@ data TreasuryParam = TreasuryParam
     minLoan      :: Integer,             --tr
     maxLoan      :: Integer,             --tr
     loanValHash  :: ValidatorHash,       --tr
-    trStateToken :: AssetClass           --tr
+    trStateToken :: AssetClass,          --tr
+    nftSymbol    :: CurrencySymbol
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

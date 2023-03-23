@@ -43,7 +43,8 @@ PlutusTx.makeLift ''LoanParam
 data LoanDatum = LoanDatum
   { 
     usdAmount     :: Integer ,
-    paramNFT      :: AssetClass
+    paramNFT      :: AssetClass ,
+    loanToken     :: AssetClass
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 {-

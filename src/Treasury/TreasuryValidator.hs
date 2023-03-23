@@ -35,9 +35,10 @@ treasuryValidator tparam tdatum tredeemer tcontext =
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
-                    traceIfFalse "minLoanCondition not met!"                           minLoanCondition &&
+                    traceIfFalse "minmaxLoanCondition not met!"                        minmaxLoanCondition &&
                     traceIfFalse "State token must be present in input and output!"    stateTokenCondition &&
-                    traceIfFalse "The loan datum is not correct!"                      loanDatumCondition
+                    traceIfFalse "The loan datum is not correct!"                      loanDatumCondition  &&
+                    traceIfFalse "Loan NFT not minted!"                                mintNFTCondition
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
@@ -54,10 +55,19 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       references :: [TxInInfo]
       references = txInfoReferenceInputs info
 
-      ownInput :: TxOut
-      ownInput = case findOwnInput tcontext of
+      ownInputTxIn :: TxInInfo
+      ownInputTxIn = case findOwnInput tcontext of
         Nothing -> traceError "treasury input missing"
-        Just i -> txInInfoResolved i
+        Just i  ->  i
+      
+      ownInput :: TxOut
+      ownInput = txInInfoResolved ownInputTxIn
+
+      loanNFTName :: TokenName
+      loanNFTName = TokenName (getTxId (txOutRefId (txInInfoOutRef ownInputTxIn)))
+      
+      loanNFTPolicy :: CurrencySymbol
+      loanNFTPolicy = nftSymbol tparam
 
       ownOutput :: TxOut
       ownOutput = case getContinuingOutputs tcontext of
@@ -150,6 +160,18 @@ treasuryValidator tparam tdatum tredeemer tcontext =
         [o]     -> o
         _       -> traceError "Expected exactly one loan output"
       
+      
+      lnDatum :: OutputDatum -> Maybe Ln.LoanDatum
+      lnDatum md = do 
+        case md of
+          OutputDatum d -> fromBuiltinData (getDatum d)
+          _             -> traceError "Datum not found"
+
+      loanDatum :: Ln.LoanDatum
+      loanDatum = case lnDatum $ txOutDatum loanOutput of
+        Just ld    ->   ld
+        _          ->   traceError "Loan datum is not the correct format!"
+
 
       loanValue :: Value
       loanValue = txOutValue loanOutput    
@@ -172,22 +194,35 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       usd1Dec :: Integer
       usd1Dec = usd1decimal tparam
       
+      valueMinted :: Value
+      valueMinted = txInfoMint info
+      
+      --Beyond this point, all values are boolean conditions used in the final spending check
+      
+      
+      valueToBeMinted :: Value
+      valueToBeMinted = singleton loanNFTPolicy loanNFTName 1
+      
+      
+      
       collateralCheck :: Bool
       collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
 
       --Final formulation of withdraw spending conditions
 
-      minLoanCondition :: Bool
-      minLoanCondition = usd1Withdrawn >= (minLoan tparam) * usd1Dec
+      minmaxLoanCondition :: Bool
+      minmaxLoanCondition = (usd1Withdrawn >= (minLoan tparam) * usd1Dec) && (usd1Withdrawn <= (maxLoan tparam) * usd1Dec)
 
       loanDatumCondition :: Bool
-      loanDatumCondition = True
+      loanDatumCondition = ((Ln.usdAmount loanDatum) >= usd1Withdrawn) &&
+                           ((Ln.paramNFT loanDatum) == prmAsset) &&
+                           ((Ln.loanToken loanDatum) == (assetClass loanNFTPolicy loanNFTName))
 
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
       mintNFTCondition :: Bool
-      mintNFTCondition = True
+      mintNFTCondition = valueMinted == valueToBeMinted
 
       
       --Deposit conditions
