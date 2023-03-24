@@ -33,7 +33,8 @@ import Param.ParamTypes
 loanValidator :: LoanParam -> LoanDatum -> LoanRedeemer -> ScriptContext -> Bool
 loanValidator lparam ldatum lredeemer lcontext =
     case lredeemer of 
-        Withdraw       ->    traceIfFalse "Loan repayment conditions not met!"     loanConditions
+        Withdraw       ->    traceIfFalse "Loan repayment conditions not met!"     loanConditions &&
+                             traceIfFalse "Loan NFT not burned in tx!"             burnCondition
         Update         ->    traceIfFalse "Update conditions unmet!"               loanUpdateConditions
     where
         info :: TxInfo
@@ -106,7 +107,7 @@ loanValidator lparam ldatum lredeemer lcontext =
         tOPs = txInfoOutputs info
 
         arbOutput :: TxOut
-        arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (arbValHash lparam) (Just (stake1 lparam)))] of
+        arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress arbHash (Just stakeH))] of
           [o]    -> o
           _      -> traceError "exactly one arb output expected!"
 
@@ -122,8 +123,16 @@ loanValidator lparam ldatum lredeemer lcontext =
         arbCondition :: Bool
         arbCondition = (assetClassValueOf arbValue usdAsset) * 100 >= (usdAmount loanInputDatum) * 110
         
+        --NFT Burning Conditions outlined below
+        loanNFT :: AssetClass
+        loanNFT = loanToken ldatum
+
+        mintVal :: Value
+        mintVal = txInfoMint info
+
+
         burnCondition :: Bool
-        burnCondition = True
+        burnCondition = (assetClassValueOf mintVal loanNFT) == -1 
 
         loanConditions :: Bool
         loanConditions = ownOutputZero && arbCondition

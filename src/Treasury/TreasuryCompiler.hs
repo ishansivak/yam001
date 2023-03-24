@@ -36,8 +36,7 @@ tp = TreasuryParam
     minLoan      =   100,
     maxLoan      =   1000,
     loanValHash  =   Ln.lnValidatorHash LnC.lp ,
-    trStateToken =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken",
-    nftSymbol    =   PLV.CurrencySymbol "618247682174691283702183"
+    trStateToken =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken"
   }
 
 writeProjectTreasuryScript :: IO (Either (FileError ()) ())

@@ -37,8 +37,7 @@ data TreasuryParam = TreasuryParam
     minLoan      :: Integer,             --tr
     maxLoan      :: Integer,             --tr
     loanValHash  :: ValidatorHash,       --tr
-    trStateToken :: AssetClass,          --tr
-    nftSymbol    :: CurrencySymbol
+    trStateToken :: AssetClass          --tr
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -46,7 +45,9 @@ PlutusTx.makeLift ''TreasuryParam
 
 -- consider representing Issuer with a token, instead of PKH
 data TreasuryDatum = TreasuryDatum
-  { paramNFT  :: !AssetClass
+  { 
+    paramNFT  :: AssetClass,
+    nftSymbol :: CurrencySymbol
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -63,6 +64,12 @@ PlutusTx.makeLift ''TreasuryDatum
 
 data TreasuryRedeemer = Withdraw | Deposit | Update
   deriving (Show)
+instance Eq TreasuryRedeemer where
+  {-# INLINEABLE (==) #-}
+  Withdraw == Withdraw      = True
+  Deposit  == Deposit       = True
+  Update   == Update        = True
+  _        == _             = False
 
 PlutusTx.makeIsDataIndexed ''TreasuryRedeemer [('Withdraw, 0), ('Deposit, 1), ('Update, 2)]
 PlutusTx.makeLift ''TreasuryRedeemer

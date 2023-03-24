@@ -29,19 +29,22 @@ import  qualified Treasury.TreasuryValidator as Tr
 import  qualified Loan.LoanValidator         as Ln
 import  qualified Stake.StakeValidator       as Sv
 import  qualified Arb.ArbValidator           as Ar
+import  qualified Mint.MintValidator         as Mv
 
 
 loanDatum :: LnD.LoanDatum
 loanDatum = LnD.LoanDatum {
     LnD.usdAmount     =  100000000 ,
     LnD.paramNFT      =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken" ,
-    LnD.loanToken     =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "txid"       
+    LnD.loanToken     =  assetClass Mv.policyCS "TXIDgoeshere"
 }
 
 testDatum :: TreasuryDatum
-testDatum = TreasuryDatum {
-      paramNFT = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
-} 
+testDatum = TreasuryDatum 
+  {
+      paramNFT  = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken",
+      nftSymbol = Mv.policyCS
+  } 
 
 --5820f0b8380a408c5cb2ab0db35db480baf8dadfcfa2a12bd0eaedd87a984c943eda
 

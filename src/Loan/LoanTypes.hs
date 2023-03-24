@@ -61,6 +61,11 @@ PlutusTx.makeLift ''LoanDatum
 
 data LoanRedeemer = Withdraw | Update
   deriving (Show)
+instance Eq LoanRedeemer where
+  {-# INLINEABLE (==) #-}
+  Withdraw == Withdraw  = True
+  Update   == Update    = True
+  _        == _         = False
 
 PlutusTx.makeIsDataIndexed ''LoanRedeemer [('Withdraw, 0), ('Update, 1)]
 PlutusTx.makeLift ''LoanRedeemer

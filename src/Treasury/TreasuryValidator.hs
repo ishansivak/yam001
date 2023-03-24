@@ -67,7 +67,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       loanNFTName = TokenName (getTxId (txOutRefId (txInInfoOutRef ownInputTxIn)))
       
       loanNFTPolicy :: CurrencySymbol
-      loanNFTPolicy = nftSymbol tparam
+      loanNFTPolicy = nftSymbol tdatum
 
       ownOutput :: TxOut
       ownOutput = case getContinuingOutputs tcontext of
