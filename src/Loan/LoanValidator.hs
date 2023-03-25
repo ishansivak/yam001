@@ -138,7 +138,7 @@ loanValidator lparam ldatum lredeemer lcontext =
 
 
         burnCondition :: Bool
-        burnCondition = True --(assetClassValueOf mintVal loanNFT) == -1 
+        burnCondition = (assetClassValueOf mintVal loanNFT) == -1 
 
         loanConditions :: Bool
         loanConditions = ownOutputZero && arbCondition

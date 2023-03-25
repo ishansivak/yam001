@@ -77,7 +77,10 @@ writeJSON file = LBS.writeFile file . encode . scriptDataToJson ScriptDataJsonDe
 
 main :: IO ()
 main = do
-      writeJSON "output/paramXP.json" paramDatum
-      writeJSON "output/trXP.json"    testDatum
-      writeJSON "output/wR.json"      updateRedeemer
-      writeJSON "output/lnXP.json"    loanDatum
+      writeJSON "output/paramDatum.json"            paramDatum
+      writeJSON "output/treasuryDatum.json"         testDatum
+      writeJSON "output/treasuryRedeemer.json"      updateRedeemer
+      writeJSON "output/loanRedeemer.json"          updateRedeemer
+      writeJSON "output/arbDatum.json"              updateRedeemer
+      writeJSON "output/mintRedeemer.json"          updateRedeemer
+      writeJSON "output/loanDatum.json"             loanDatum
