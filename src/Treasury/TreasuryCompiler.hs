@@ -41,5 +41,14 @@ tp = TreasuryParam
 
 writeProjectTreasuryScript :: IO (Either (FileError ()) ())
 writeProjectTreasuryScript =
+<<<<<<< HEAD
   writeValidator "output/treasuryXP.plutus" $
     Treasury.validator $ tp
+=======
+  writeValidator "output/treasuryPreview.plutus" $
+    Treasury.validator $
+      TreasuryParam
+        { cblpToken = Plutus.V1.Ledger.Value.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tCBLP"
+        }
+
+>>>>>>> main

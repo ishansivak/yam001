@@ -20,6 +20,7 @@ import Plutus.V1.Ledger.Value
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import qualified PlutusTx
+import Ledger.Address
 import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
@@ -33,11 +34,25 @@ treasuryValHash (definite)
 finite interest repayment variable
 -}
 data ParamDatum = ParamDatum
+<<<<<<< HEAD
   { 
     usdLL        :: Integer,             --oracle
     cblpLL       :: Integer,             --oracle
     arbValHash   :: ValidatorHash,       --arb
     upBool       :: Bool
+=======
+  { cRatio       :: Integer,   --6 digit CR e.g. 1.6 = 1600000
+    usdLL        :: Integer,
+    cblpLL       :: Integer,
+    stake1       :: StakePubKeyHash,  --Will be staking script hash in final product
+    usd1         :: AssetClass,
+    usd1decimal  :: Integer,
+    minLoan      :: Integer,
+    maxLoan      :: Integer,
+    loanValHash  :: PaymentPubKeyHash,
+    arbValHash   :: PaymentPubKeyHash,
+    trValHash    :: PaymentPubKeyHash
+>>>>>>> main
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
