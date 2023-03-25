@@ -20,7 +20,6 @@ import Plutus.V1.Ledger.Value
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import qualified PlutusTx
-import Ledger.Address
 import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
