@@ -11,18 +11,10 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-<<<<<<< HEAD
 module Treasury.TreasuryValidator (validator , trValidatorHash) where
 
 
 import Ledger (scriptHashAddress, scriptValidatorHashAddress)
-=======
-module Treasury.TreasuryValidator (validator, treasuryValidator) where
-
-
-import Ledger (scriptHashAddress, stakingCredential)
-import Ledger.Address
->>>>>>> main
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
@@ -42,16 +34,11 @@ treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> Scrip
 treasuryValidator tparam tdatum tredeemer tcontext = 
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
-<<<<<<< HEAD
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
                     traceIfFalse "minmaxLoanCondition not met!"                        minmaxLoanCondition &&
                     traceIfFalse "State token must be present in input and output!"    stateTokenCondition &&
                     traceIfFalse "The loan datum is not correct!"                      loanDatumCondition  &&
                     traceIfFalse "Loan NFT not minted!"                                mintNFTCondition
-=======
-                    traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions &&
-                    traceIfFalse "The collateral isn't adequate!"                      collateralCheck
->>>>>>> main
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
