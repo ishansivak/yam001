@@ -23,7 +23,6 @@ writeValidator :: FilePath -> Plutus.V2.Ledger.Api.Validator -> IO (Either (File
 writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . Plutus.V2.Ledger.Api.unValidatorScript
 
 
-writeProjectLoanScript :: IO (Either (FileError ()) ())
-writeProjectLoanScript =
-  writeValidator "output/arbXP.plutus" $
-    Ar.validator
+writeProjectArbScript :: IO (Either (FileError ()) ())
+writeProjectArbScript =
+  writeValidator "output/arbXP.plutus" Ar.validator

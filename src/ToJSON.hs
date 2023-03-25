@@ -63,7 +63,7 @@ paramDatum = ParamDatum
   { 
     usdLL        =   1000000,
     cblpLL       =   10000,
-    trValHash    =   Tr.trValidatorHash tp,
+    arbValHash   =   Tr.trValidatorHash tp,
     upBool       =   False  
   }
 

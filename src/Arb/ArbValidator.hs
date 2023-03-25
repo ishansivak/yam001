@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Arb.ArbValidator (arbVHash, validator) where
+module Arb.ArbValidator (arbVHash, validator, ) where
 
 import Plutus.V2.Ledger.Api (BuiltinData, Validator, mkValidatorScript, ValidatorHash)
 import PlutusTx (compile, applyCode, liftCode, unstableMakeIsData, makeLift)
@@ -29,6 +29,8 @@ data ArbParams = ArbParams
   }
 unstableMakeIsData ''ArbParams
 makeLift ''ArbParams
+
+
 {-# INLINEABLE arbValidator #-}
 arbValidator :: ArbParams -> () -> () -> ScriptContext -> Bool
 arbValidator arbprm () () ctx = traceIfFalse "nft not in input" nftCondition
@@ -53,7 +55,10 @@ validatorF prm = mkValidatorScript $
     liftCode prm
 
 tmpArb :: ArbParams
-tmpArb = ArbParams {prmNFT = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"}
+tmpArb = ArbParams 
+  {
+    prmNFT = assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken"
+  }
 
 validator :: Validator
 validator = validatorF tmpArb

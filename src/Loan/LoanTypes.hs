@@ -32,8 +32,8 @@ data LoanParam = LoanParam
     cblpToken    :: AssetClass,
     stake1       :: StakeValidatorHash,  --tr , ln
     usd1         :: AssetClass,          --tr , ln
-    usd1decimal  :: Integer,             --tr , ln
-    arbValHash   :: ValidatorHash
+    usd1decimal  :: Integer,              --tr , ln
+    arbVlHash   :: ValidatorHash
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

@@ -98,7 +98,7 @@ loanValidator lparam ldatum lredeemer lcontext =
 
         --Arbitrage contract output search
         arbHash :: ValidatorHash
-        arbHash = arbValHash lparam
+        arbHash = arbValHash pODatum
 
         stakeH :: StakeValidatorHash
         stakeH = stake1 lparam
@@ -120,8 +120,14 @@ loanValidator lparam ldatum lredeemer lcontext =
         usdDec :: Integer
         usdDec = usd1decimal lparam
 
+        usdX :: Integer
+        usdX = usdLL pODatum
+
+        adaAsset :: AssetClass
+        adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
+
         arbCondition :: Bool
-        arbCondition = (assetClassValueOf arbValue usdAsset) * 100 >= (usdAmount loanInputDatum) * 110
+        arbCondition = (assetClassValueOf arbValue adaAsset) * usdDec * 100 >= (usdAmount loanInputDatum) * 110 * usdX
         
         --NFT Burning Conditions outlined below
         loanNFT :: AssetClass
@@ -132,7 +138,7 @@ loanValidator lparam ldatum lredeemer lcontext =
 
 
         burnCondition :: Bool
-        burnCondition = (assetClassValueOf mintVal loanNFT) == -1 
+        burnCondition = True --(assetClassValueOf mintVal loanNFT) == -1 
 
         loanConditions :: Bool
         loanConditions = ownOutputZero && arbCondition

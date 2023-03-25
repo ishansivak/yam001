@@ -10,7 +10,6 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.ByteString.Short as SBS
 import qualified Loan.LoanValidator as Loan
-import Loan.LoanTypes
 import qualified Plutus.V1.Ledger.Scripts
 import qualified Plutus.V1.Ledger.Value as PLV
 import qualified Plutus.V2.Ledger.Api
@@ -18,6 +17,7 @@ import qualified Plutus.V2.Ledger.Contexts
 import qualified PlutusTx
 import PlutusTx.Prelude
 import Prelude (FilePath, IO)
+import Loan.LoanTypes
 import qualified Stake.StakeValidator       as Sv
 import qualified Arb.ArbValidator           as Ar
 
@@ -32,10 +32,10 @@ lp = LoanParam
     stake1       =   Sv.stakeVHash,
     usd1         =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
     usd1decimal  =   1000000,
-    arbValHash   =   Ar.arbVHash
+    arbVlHash    =   Ar.arbVHash
   }
 
 writeProjectLoanScript :: IO (Either (FileError ()) ())
 writeProjectLoanScript =
-  writeValidator "output/loanXP.plutus" $
+  writeValidator "output/loanXP2.plutus" $
     Loan.lnValidator $ lp
