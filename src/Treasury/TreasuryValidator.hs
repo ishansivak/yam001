@@ -11,18 +11,10 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-<<<<<<< HEAD
 module Treasury.TreasuryValidator (validator , trValidatorHash) where
 
 
 import Ledger (scriptHashAddress, scriptValidatorHashAddress)
-=======
-module Treasury.TreasuryValidator (validator, treasuryValidator) where
-
-
-import Ledger (scriptHashAddress, stakingCredential)
-import Ledger.Address
->>>>>>> main
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
@@ -42,16 +34,11 @@ treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> Scrip
 treasuryValidator tparam tdatum tredeemer tcontext = 
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
-<<<<<<< HEAD
                     traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
                     traceIfFalse "minmaxLoanCondition not met!"                        minmaxLoanCondition &&
                     traceIfFalse "State token must be present in input and output!"    stateTokenCondition &&
                     traceIfFalse "The loan datum is not correct!"                      loanDatumCondition  &&
                     traceIfFalse "Loan NFT not minted!"                                mintNFTCondition
-=======
-                    traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions &&
-                    traceIfFalse "The collateral isn't adequate!"                      collateralCheck
->>>>>>> main
 
         --Withdrawal conditions above
         Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
@@ -142,7 +129,6 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
         _       -> traceError "Output does not have param datum"
-<<<<<<< HEAD
 
       stateTokenCondition :: Bool
       stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken tparam)) &&
@@ -157,43 +143,12 @@ treasuryValidator tparam tdatum tredeemer tcontext =
 
       lOutputsPay :: [TxOut]
       lOutputsPay = [op | op <- tOPs , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
-=======
-
-      --Loan UTxO conditions defined below
-    {-
-      txOuts :: [TxOut]
-      txOuts = txInfoOutputs info
-
-      addrParse :: TxOut -> (Credential, Maybe StakingCredential)
-      addrParse tx = (a,b)
-                     where
-                      add = txOutAddress tx
-                      a   = addressCredential add
-                      b   = addressStakingCredential add
-
-      lOutputs :: [TxOut]
-      lOutputs = [op | op <- txOuts , (txOutAddress op) == (pubKeyHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))]
-
->>>>>>> main
 
       loanOutput :: TxOut
       loanOutput = case lOutputsPay of
         [o]     ->  o
-        []      -> traceError "No loan outputs!"
         _       ->  traceError "There must be exactly 1 loan output"
-    -}
-      loanOutput :: TxOut
-      loanOutput =
-        let ins =
-              [ i
-                | i <- txInfoOutputs info,
-                  txOutAddress i == pubKeyHashAddress (loanValHash pODatum) (Just (stake1 pODatum))
-              ]
-         in case ins of
-              [o] -> o
-              _ -> traceError "expected exactly one loan output"   
-
-
+      
       loanValue :: Value
       loanValue = txOutValue loanOutput
 
@@ -251,7 +206,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       
       collateralCheck :: Bool
-      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum) * 60))
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
 
       --Final formulation of withdraw spending conditions
 
@@ -266,7 +221,6 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
-<<<<<<< HEAD
       mintNFTCondition :: Bool
       mintNFTCondition = valueMinted == valueToBeMinted
 
@@ -279,25 +233,6 @@ treasuryValidator tparam tdatum tredeemer tcontext =
 
       updateConditions :: Bool
       updateConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)
-=======
-      withdrawConditions :: Bool
-      withdrawConditions = usd1Withdrawn >= minLoan pODatum
-      
-      
-      
-      
-      
-      --Deposit conditions
-      depositConditions :: Bool
-      depositConditions = False   --Placeholder till depositing to UTxO's is implemented
-      
-      
-      --Update conditions
-
-
-      updateConditions :: Bool
-      updateConditions = True   --Placeholder till the withdraw logic is formalized
->>>>>>> main
 
 
 
