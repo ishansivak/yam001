@@ -11,14 +11,21 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
+<<<<<<< HEAD
+module Treasury.TreasuryValidator (validator , trValidatorHash) where
+
+
+import Ledger (scriptHashAddress, scriptValidatorHashAddress)
+=======
 module Treasury.TreasuryValidator (validator, treasuryValidator) where
 
 
 import Ledger (scriptHashAddress, stakingCredential)
 import Ledger.Address
+>>>>>>> main
 import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
-import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript)
+import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
 import Plutus.V1.Ledger.Value
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
@@ -27,6 +34,7 @@ import PlutusTx.Prelude hiding (Semigroup (..), unless)
 import Prelude (Show (..))
 import qualified Prelude as Pr
 import Treasury.TreasuryTypes
+import qualified Loan.LoanTypes as Ln
 import Param.ParamTypes
 
 {-# INLINEABLE treasuryValidator #-}
@@ -34,28 +42,45 @@ treasuryValidator :: TreasuryParam -> TreasuryDatum -> TreasuryRedeemer -> Scrip
 treasuryValidator tparam tdatum tredeemer tcontext = 
     case tredeemer of       
         Withdraw -> traceIfFalse "Input and output treasury datum must be the same!"   datumCondition &&
+<<<<<<< HEAD
+                    traceIfFalse "Withdrawal conditions unmet!"                        collateralCheck &&
+                    traceIfFalse "minmaxLoanCondition not met!"                        minmaxLoanCondition &&
+                    traceIfFalse "State token must be present in input and output!"    stateTokenCondition &&
+                    traceIfFalse "The loan datum is not correct!"                      loanDatumCondition  &&
+                    traceIfFalse "Loan NFT not minted!"                                mintNFTCondition
+=======
                     traceIfFalse "Withdrawal conditions unmet!"                        withdrawConditions &&
                     traceIfFalse "The collateral isn't adequate!"                      collateralCheck
+>>>>>>> main
 
         --Withdrawal conditions above
-        Deposit  -> traceIfFalse "Deposit conditions not met!"      depositConditions
-        Update   -> traceIfFalse "Update not authorized!"           updateConditions
+        Deposit  -> traceIfFalse "Deposit conditions not met!"                         depositConditions
+        Update   -> traceIfFalse "Update not authorized!"                              updateConditions
     where
 
       --Generally useful primitive data like TxInfo, continuing outputs,etc
       info :: TxInfo
       info = scriptContextTxInfo tcontext
 
-      paramAsset :: AssetClass
-      paramAsset = cblpToken tparam
+      cblpAsset :: AssetClass
+      cblpAsset = cblpToken tparam
 
       references :: [TxInInfo]
       references = txInfoReferenceInputs info
 
-      ownInput :: TxOut
-      ownInput = case findOwnInput tcontext of
+      ownInputTxIn :: TxInInfo
+      ownInputTxIn = case findOwnInput tcontext of
         Nothing -> traceError "treasury input missing"
-        Just i -> txInInfoResolved i
+        Just i  ->  i
+      
+      ownInput :: TxOut
+      ownInput = txInInfoResolved ownInputTxIn
+
+      loanNFTName :: TokenName
+      loanNFTName = TokenName (getTxId (txOutRefId (txInInfoOutRef ownInputTxIn)))
+      
+      loanNFTPolicy :: CurrencySymbol
+      loanNFTPolicy = nftSymbol tdatum
 
       ownOutput :: TxOut
       ownOutput = case getContinuingOutputs tcontext of
@@ -73,9 +98,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       --treasury  datum of ownInput and ownOutput
       treasuryInputDatum :: TreasuryDatum
-      treasuryInputDatum = case tDatum $ txOutDatum ownInput of
-        Just td -> td
-        _       -> traceError "Input does not have treasury datum"
+      treasuryInputDatum = tdatum
       
       prmAsset :: AssetClass
       prmAsset = paramNFT treasuryInputDatum
@@ -93,6 +116,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       treasuryOutputValue :: Value
       treasuryOutputValue = txOutValue ownOutput
 
+      
 
       --Making sure the protocol param UTxO is referenced
       hasNFT :: [TxOut] -> TxOut
@@ -118,6 +142,22 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
         _       -> traceError "Output does not have param datum"
+<<<<<<< HEAD
+
+      stateTokenCondition :: Bool
+      stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken tparam)) &&
+                            (1 == assetClassValueOf treasuryOutputValue (trStateToken tparam))  
+
+      --Loan UTxO conditions defined below
+      tOPs :: [TxOut]
+      tOPs = txInfoOutputs info
+
+      
+{-
+
+      lOutputsPay :: [TxOut]
+      lOutputsPay = [op | op <- tOPs , (addressCredential (txOutAddress op)) == PubKeyCredential (loanValHash pODatum)]
+=======
 
       --Loan UTxO conditions defined below
     {-
@@ -134,9 +174,10 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       lOutputs :: [TxOut]
       lOutputs = [op | op <- txOuts , (txOutAddress op) == (pubKeyHashAddress (loanValHash pODatum) (Just (stake1 pODatum)))]
 
+>>>>>>> main
 
       loanOutput :: TxOut
-      loanOutput = case lOutputs of
+      loanOutput = case lOutputsPay of
         [o]     ->  o
         []      -> traceError "No loan outputs!"
         _       ->  traceError "There must be exactly 1 loan output"
@@ -155,7 +196,31 @@ treasuryValidator tparam tdatum tredeemer tcontext =
 
       loanValue :: Value
       loanValue = txOutValue loanOutput
+
+      loanValue :: Value
+      loanValue = valueLockedBy info (loanValHash pODatum)
+-}
+      loanOutput :: TxOut
+      loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash tparam) (Just (stake1 tparam)))] of
+        [o]     -> o
+        _       -> traceError "Expected exactly one loan output"
       
+      
+      lnDatum :: OutputDatum -> Maybe Ln.LoanDatum
+      lnDatum md = do 
+        case md of
+          OutputDatum d -> fromBuiltinData (getDatum d)
+          _             -> traceError "Datum not found"
+
+      loanDatum :: Ln.LoanDatum
+      loanDatum = case lnDatum $ txOutDatum loanOutput of
+        Just ld    ->   ld
+        _          ->   traceError "Loan datum is not the correct format!"
+
+
+      loanValue :: Value
+      loanValue = txOutValue loanOutput    
+
       adaAsset :: AssetClass
       adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
 
@@ -163,24 +228,58 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       llLocked = assetClassValueOf loanValue adaAsset   --Amount of lovelace locked by contract
 
       cblpLocked :: Integer
-      cblpLocked = assetClassValueOf loanValue paramAsset  --Amount of CBLP *10^6  (decimal point)
+      cblpLocked = assetClassValueOf loanValue cblpAsset  --Amount of CBLP *10^6  (decimal point)
 
       usd1Asset :: AssetClass
-      usd1Asset = usd1 pODatum
+      usd1Asset = usd1 tparam
 
       usd1Withdrawn :: Integer
       usd1Withdrawn = (assetClassValueOf treasuryInputValue usd1Asset) - (assetClassValueOf treasuryOutputValue usd1Asset)
 
       usd1Dec :: Integer
-      usd1Dec = usd1decimal pODatum
+      usd1Dec = usd1decimal tparam
+      
+      valueMinted :: Value
+      valueMinted = txInfoMint info
+      
+      --Beyond this point, all values are boolean conditions used in the final spending check
+      
+      
+      valueToBeMinted :: Value
+      valueToBeMinted = singleton loanNFTPolicy loanNFTName 1
+      
+      
       
       collateralCheck :: Bool
       collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum) * 60))
 
       --Final formulation of withdraw spending conditions
+
+      minmaxLoanCondition :: Bool
+      minmaxLoanCondition = (usd1Withdrawn >= (minLoan tparam) * usd1Dec) && (usd1Withdrawn <= (maxLoan tparam) * usd1Dec)
+
+      loanDatumCondition :: Bool
+      loanDatumCondition = ((Ln.usdAmount loanDatum) >= usd1Withdrawn) &&
+                           ((Ln.paramNFT loanDatum) == prmAsset) &&
+                           ((Ln.loanToken loanDatum) == (assetClass loanNFTPolicy loanNFTName))
+
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
 
+<<<<<<< HEAD
+      mintNFTCondition :: Bool
+      mintNFTCondition = valueMinted == valueToBeMinted
+
+      
+      --Deposit conditions
+      depositConditions :: Bool
+      depositConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)   --Placeholder till depositing to UTxO's is implemented
+      --Update conditions
+      
+
+      updateConditions :: Bool
+      updateConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)
+=======
       withdrawConditions :: Bool
       withdrawConditions = usd1Withdrawn >= minLoan pODatum
       
@@ -198,6 +297,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
 
       updateConditions :: Bool
       updateConditions = True   --Placeholder till the withdraw logic is formalized
+>>>>>>> main
 
 
 
@@ -223,3 +323,6 @@ typedValidator tp = go tp
 
 validator :: TreasuryParam -> Validator
 validator = validatorScript . typedValidator
+
+trValidatorHash :: TreasuryParam -> ValidatorHash
+trValidatorHash = validatorHash . typedValidator

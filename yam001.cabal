@@ -47,6 +47,13 @@ library
   exposed-modules:      Treasury.TreasuryValidator
                         Treasury.TreasuryTypes
                         Treasury.TreasuryCompiler
+                        Loan.LoanValidator
+                        Loan.LoanTypes
+                        Loan.LoanCompiler
+                        Mint.MintValidator
+                        Stake.StakeValidator
+                        Arb.ArbValidator
+                        Arb.ArbCompiler
                         Param.ParamTypes
                         ToJSON
 
@@ -60,5 +67,6 @@ library
                       , plutus-script-utils
                       , serialise
                       , aeson
+                      , text
 
   ghc-options: -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas

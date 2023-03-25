@@ -28,7 +28,16 @@ import qualified Prelude as Pr
 
 
 data TreasuryParam = TreasuryParam
-  { cblpToken :: AssetClass
+  { 
+    cblpToken    :: AssetClass,
+    cRatio       :: Integer,             --tr/par
+    stake1       :: StakeValidatorHash,  --tr , ln
+    usd1         :: AssetClass,          --tr , ln
+    usd1decimal  :: Integer,             --tr , ln
+    minLoan      :: Integer,             --tr
+    maxLoan      :: Integer,             --tr
+    loanValHash  :: ValidatorHash,       --tr
+    trStateToken :: AssetClass          --tr
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -36,7 +45,9 @@ PlutusTx.makeLift ''TreasuryParam
 
 -- consider representing Issuer with a token, instead of PKH
 data TreasuryDatum = TreasuryDatum
-  { paramNFT  :: AssetClass
+  { 
+    paramNFT  :: AssetClass,
+    nftSymbol :: CurrencySymbol
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 
@@ -47,12 +58,18 @@ instance Eq TreasuryDatum where
 
 
 PlutusTx.unstableMakeIsData ''TreasuryDatum
-
+PlutusTx.makeLift ''TreasuryDatum
 
 
 
 data TreasuryRedeemer = Withdraw | Deposit | Update
   deriving (Show)
+instance Eq TreasuryRedeemer where
+  {-# INLINEABLE (==) #-}
+  Withdraw == Withdraw      = True
+  Deposit  == Deposit       = True
+  Update   == Update        = True
+  _        == _             = False
 
 PlutusTx.makeIsDataIndexed ''TreasuryRedeemer [('Withdraw, 0), ('Deposit, 1), ('Update, 2)]
 PlutusTx.makeLift ''TreasuryRedeemer

@@ -1,0 +1,6 @@
+Build profile: -w ghc-8.10.7 -O1
+In order, the following will be built (use -v for more details):
+ - yam001-1.0.0 (lib) (file src/ToJSON.hs changed)
+Preprocessing library for yam001-1.0.0..
+Building library for yam001-1.0.0..
+[ 8 of 12] Compiling Loan.LoanValidator ( src/Loan/LoanValidator.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Loan/LoanValidator.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Loan/LoanValidator.dyn_o )

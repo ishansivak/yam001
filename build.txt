@@ -1,0 +1,292 @@
+Build profile: -w ghc-8.10.7 -O1
+In order, the following will be built (use -v for more details):
+ - yam001-1.0.0 (lib) (file src/ToJSON.hs changed)
+Preprocessing library for yam001-1.0.0..
+Building library for yam001-1.0.0..
+[ 7 of 12] Compiling Param.ParamTypes ( src/Param/ParamTypes.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Param/ParamTypes.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Param/ParamTypes.dyn_o )
+
+src/Param/ParamTypes.hs:17:1: warning: [-Wunused-imports]
+    The import of ‘RedeemerType’
+    from module ‘Plutus.Script.Utils.V1.Typed.Scripts.Validators’ is redundant
+   |
+17 | import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Param/ParamTypes.hs:18:1: warning: [-Wunused-imports]
+    The import of ‘TypedValidator, mkTypedValidator,
+                   mkTypedValidatorParam, mkUntypedValidator, validatorScript’
+    from module ‘Plutus.Script.Utils.V2.Typed.Scripts’ is redundant
+   |
+18 | import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Param/ParamTypes.hs:21:1: warning: [-Wunused-imports]
+    The import of ‘Plutus.V2.Ledger.Contexts’ is redundant
+      except perhaps to import instances from ‘Plutus.V2.Ledger.Contexts’
+    To import instances alone, use: import Plutus.V2.Ledger.Contexts()
+   |
+21 | import Plutus.V2.Ledger.Contexts
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Param/ParamTypes.hs:49:3: warning: [-Wmissing-deriving-strategies]
+    No deriving strategy specified. Did you want stock, newtype, or anyclass?
+    Use DerivingStrategies to specify a strategy.
+   |
+49 |   deriving (Pr.Eq, Pr.Ord, Show, Generic)
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[ 8 of 12] Compiling Loan.LoanValidator ( src/Loan/LoanValidator.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Loan/LoanValidator.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Loan/LoanValidator.dyn_o ) [TH]
+
+src/Loan/LoanValidator.hs:17:1: warning: [-Wunused-imports]
+    The import of ‘Ledger’ is redundant
+      except perhaps to import instances from ‘Ledger’
+    To import instances alone, use: import Ledger()
+   |
+17 | import Ledger (scriptHashAddress, scriptValidatorHashAddress)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:18:1: warning: [-Wunused-imports]
+    The import of ‘Ledger.Address’ is redundant
+      except perhaps to import instances from ‘Ledger.Address’
+    To import instances alone, use: import Ledger.Address()
+   |
+18 | import Ledger.Address
+   | ^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:19:1: warning: [-Wunused-imports]
+    The qualified import of ‘Ledger.Ada’ is redundant
+      except perhaps to import instances from ‘Ledger.Ada’
+    To import instances alone, use: import Ledger.Ada()
+   |
+19 | import qualified Ledger.Ada as Ada
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:20:1: warning: [-Wunused-imports]
+    The import of ‘Plutus.Script.Utils.V1.Typed.Scripts.Validators’ is redundant
+      except perhaps to import instances from ‘Plutus.Script.Utils.V1.Typed.Scripts.Validators’
+    To import instances alone, use: import Plutus.Script.Utils.V1.Typed.Scripts.Validators()
+   |
+20 | import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:21:1: warning: [-Wunused-imports]
+    The import of ‘ValidatorTypes, mkTypedValidator’
+    from module ‘Plutus.Script.Utils.V2.Typed.Scripts’ is redundant
+   |
+21 | import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:22:1: warning: [-Wunused-imports]
+    The import of ‘Plutus.V1.Ledger.Value’ is redundant
+      except perhaps to import instances from ‘Plutus.V1.Ledger.Value’
+    To import instances alone, use: import Plutus.V1.Ledger.Value()
+   |
+22 | import Plutus.V1.Ledger.Value
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:24:1: warning: [-Wunused-imports]
+    The import of ‘Plutus.V2.Ledger.Contexts’ is redundant
+      except perhaps to import instances from ‘Plutus.V2.Ledger.Contexts’
+    To import instances alone, use: import Plutus.V2.Ledger.Contexts()
+   |
+24 | import Plutus.V2.Ledger.Contexts
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:27:1: warning: [-Wunused-imports]
+    The import of ‘Prelude’ is redundant
+      except perhaps to import instances from ‘Prelude’
+    To import instances alone, use: import Prelude()
+   |
+27 | import Prelude (Show (..))
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:28:1: warning: [-Wunused-imports]
+    The qualified import of ‘Prelude’ is redundant
+      except perhaps to import instances from ‘Prelude’
+    To import instances alone, use: import Prelude()
+   |
+28 | import qualified Prelude as Pr
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:30:1: warning: [-Wunused-imports]
+    The import of ‘Param.ParamTypes’ is redundant
+      except perhaps to import instances from ‘Param.ParamTypes’
+    To import instances alone, use: import Param.ParamTypes()
+   |
+30 | import Param.ParamTypes
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Loan/LoanValidator.hs:34:15: warning: [-Wunused-matches]
+    Defined but not used: ‘lparam’
+   |
+34 | loanValidator lparam ldatum lredeemer lcontext =
+   |               ^^^^^^
+
+src/Loan/LoanValidator.hs:34:22: warning: [-Wunused-matches]
+    Defined but not used: ‘ldatum’
+   |
+34 | loanValidator lparam ldatum lredeemer lcontext =
+   |                      ^^^^^^
+
+src/Loan/LoanValidator.hs:34:39: warning: [-Wunused-matches]
+    Defined but not used: ‘lcontext’
+   |
+34 | loanValidator lparam ldatum lredeemer lcontext =
+   |                                       ^^^^^^^^
+[10 of 12] Compiling Treasury.TreasuryValidator ( src/Treasury/TreasuryValidator.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Treasury/TreasuryValidator.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Treasury/TreasuryValidator.dyn_o )
+
+src/Treasury/TreasuryValidator.hs:17:1: warning: [-Wunused-imports]
+    The import of ‘Ledger’ is redundant
+      except perhaps to import instances from ‘Ledger’
+    To import instances alone, use: import Ledger()
+   |
+17 | import Ledger (scriptHashAddress, scriptValidatorHashAddress)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:19:1: warning: [-Wunused-imports]
+    The qualified import of ‘Ledger.Ada’ is redundant
+      except perhaps to import instances from ‘Ledger.Ada’
+    To import instances alone, use: import Ledger.Ada()
+   |
+19 | import qualified Ledger.Ada as Ada
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:20:1: warning: [-Wunused-imports]
+    The import of ‘Plutus.Script.Utils.V1.Typed.Scripts.Validators’ is redundant
+      except perhaps to import instances from ‘Plutus.Script.Utils.V1.Typed.Scripts.Validators’
+    To import instances alone, use: import Plutus.Script.Utils.V1.Typed.Scripts.Validators()
+   |
+20 | import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:21:1: warning: [-Wunused-imports]
+    The import of ‘ValidatorTypes, mkTypedValidator’
+    from module ‘Plutus.Script.Utils.V2.Typed.Scripts’ is redundant
+   |
+21 | import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:27:1: warning: [-Wunused-imports]
+    The import of ‘Prelude’ is redundant
+      except perhaps to import instances from ‘Prelude’
+    To import instances alone, use: import Prelude()
+   |
+27 | import Prelude (Show (..))
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:28:1: warning: [-Wunused-imports]
+    The qualified import of ‘Prelude’ is redundant
+      except perhaps to import instances from ‘Prelude’
+    To import instances alone, use: import Prelude()
+   |
+28 | import qualified Prelude as Pr
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryValidator.hs:35:26: warning: [-Wunused-matches]
+    Defined but not used: ‘tdatum’
+   |
+35 | treasuryValidator tparam tdatum tredeemer tcontext = 
+   |                          ^^^^^^
+
+src/Treasury/TreasuryValidator.hs:205:7: warning: [-Wunused-local-binds]
+    Defined but not used: ‘mintNFTCondition’
+    |
+205 |       mintNFTCondition = True
+    |       ^^^^^^^^^^^^^^^^
+[11 of 12] Compiling Treasury.TreasuryCompiler ( src/Treasury/TreasuryCompiler.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Treasury/TreasuryCompiler.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/Treasury/TreasuryCompiler.dyn_o )
+
+src/Treasury/TreasuryCompiler.hs:1:1: warning: [-Wmissing-export-lists]
+    The export item ‘module Treasury.TreasuryCompiler’ is missing an export list
+  |
+1 | {-# LANGUAGE OverloadedStrings #-}
+  | ^
+
+src/Treasury/TreasuryCompiler.hs:7:1: warning: [-Wunused-imports]
+    The import of ‘PlutusScriptV2’
+    from module ‘Cardano.Api.Shelley’ is redundant
+  |
+7 | import Cardano.Api.Shelley (PlutusScript (..), PlutusScriptV2)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryCompiler.hs:9:1: warning: [-Wunused-imports]
+    The import of ‘Data.Aeson’ is redundant
+      except perhaps to import instances from ‘Data.Aeson’
+    To import instances alone, use: import Data.Aeson()
+  |
+9 | import Data.Aeson
+  | ^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryCompiler.hs:14:1: warning: [-Wunused-imports]
+    The qualified import of ‘Plutus.V1.Ledger.Scripts’ is redundant
+      except perhaps to import instances from ‘Plutus.V1.Ledger.Scripts’
+    To import instances alone, use: import Plutus.V1.Ledger.Scripts()
+   |
+14 | import qualified Plutus.V1.Ledger.Scripts
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryCompiler.hs:17:1: warning: [-Wunused-imports]
+    The qualified import of ‘Plutus.V2.Ledger.Contexts’ is redundant
+      except perhaps to import instances from ‘Plutus.V2.Ledger.Contexts’
+    To import instances alone, use: import Plutus.V2.Ledger.Contexts()
+   |
+17 | import qualified Plutus.V2.Ledger.Contexts
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/Treasury/TreasuryCompiler.hs:18:1: warning: [-Wunused-imports]
+    The qualified import of ‘PlutusTx’ is redundant
+      except perhaps to import instances from ‘PlutusTx’
+    To import instances alone, use: import PlutusTx()
+   |
+18 | import qualified PlutusTx
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^
+[12 of 12] Compiling ToJSON           ( src/ToJSON.hs, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/ToJSON.o, /home/seanishan/cardano/prototyping/yam001/dist-newstyle/build/x86_64-linux/ghc-8.10.7/yam001-1.0.0/build/ToJSON.dyn_o )
+
+src/ToJSON.hs:1:1: warning: [-Wmissing-export-lists]
+    The export item ‘module ToJSON’ is missing an export list
+  |
+1 | {-# LANGUAGE ImportQualifiedPost #-}
+  | ^
+
+src/ToJSON.hs:8:1: warning: [-Wunused-imports]
+    The import of ‘Data.String’ is redundant
+      except perhaps to import instances from ‘Data.String’
+    To import instances alone, use: import Data.String()
+  |
+8 | import            Data.String             (IsString(fromString))
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/ToJSON.hs:9:1: warning: [-Wunused-imports]
+    The import of ‘Data.Either’ is redundant
+      except perhaps to import instances from ‘Data.Either’
+    To import instances alone, use: import Data.Either()
+  |
+9 | import            Data.Either             (fromRight)
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/ToJSON.hs:10:1: warning: [-Wunused-imports]
+    The import of ‘Data.Text’ is redundant
+      except perhaps to import instances from ‘Data.Text’
+    To import instances alone, use: import Data.Text()
+   |
+10 | import            Data.Text               (Text, pack)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/ToJSON.hs:11:1: warning: [-Wunused-imports]
+    The import of ‘Ledger.Bytes’ is redundant
+      except perhaps to import instances from ‘Ledger.Bytes’
+    To import instances alone, use: import Ledger.Bytes()
+   |
+11 | import            Ledger.Bytes            (LedgerBytes(LedgerBytes), fromHex)
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src/ToJSON.hs:17:1: warning: [-Wunused-imports]
+    The import of ‘PlutusTx.Builtins.Class’ is redundant
+      except perhaps to import instances from ‘PlutusTx.Builtins.Class’
+    To import instances alone, use: import PlutusTx.Builtins.Class()
+   |
+17 | import            PlutusTx.Builtins.Class
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+<no location info>: warning: [-Wunused-packages]
+    The following packages were specified via -package or -package-id flags,
+    but were not needed for compilation:
+      - plutus-ledger-constraints-1.0.0.0
