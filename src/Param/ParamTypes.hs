@@ -36,7 +36,6 @@ data ParamDatum = ParamDatum
   { 
     usdLL        :: Integer,             --oracle
     cblpLL       :: Integer,             --oracle
-    arbValHash   :: ValidatorHash,       --arb
     upBool       :: Bool
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)

@@ -104,7 +104,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       treasuryOutputValue = txOutValue ownOutput
 
       
-
+{-
       --Making sure the protocol param UTxO is referenced
       hasNFT :: [TxOut] -> TxOut
       hasNFT outs = case f of
@@ -129,7 +129,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       pODatum = case pDatum $ txOutDatum paramOutput of
         Just td -> td
         _       -> traceError "Output does not have param datum"
-
+-}
       stateTokenCondition :: Bool
       stateTokenCondition = (1 == assetClassValueOf treasuryInputValue (trStateToken tparam)) &&
                             (1 == assetClassValueOf treasuryOutputValue (trStateToken tparam))  
@@ -206,7 +206,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       
       collateralCheck :: Bool
-      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * 1000000)) && ((cblpLocked * 1000000 * usd1Dec) >= (usd1Withdrawn * 1000000))
 
       --Final formulation of withdraw spending conditions
 

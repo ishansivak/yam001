@@ -44,7 +44,8 @@ data LoanDatum = LoanDatum
   { 
     usdAmount     :: Integer ,
     paramNFT      :: AssetClass ,
-    loanToken     :: AssetClass
+    loanToken     :: AssetClass ,
+    arbValHash    :: ValidatorHash
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 {-

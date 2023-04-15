@@ -36,7 +36,8 @@ loanDatum :: LnD.LoanDatum
 loanDatum = LnD.LoanDatum {
     LnD.usdAmount     =  100000000 ,
     LnD.paramNFT      =  assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "paramtoken" ,
-    LnD.loanToken     =  assetClass Mv.policyCS "TXIDgoeshere"
+    LnD.loanToken     =  assetClass Mv.policyCS "9cbb5ca2c9df222c86c905d7f142d77f1f6289a618aaef95e346e9299d77ce00" ,
+    LnD.arbValHash    =   Tr.trValidatorHash tp
 }
 
 testDatum :: TreasuryDatum
@@ -63,7 +64,6 @@ paramDatum = ParamDatum
   { 
     usdLL        =   1000000,
     cblpLL       =   10000,
-    arbValHash   =   Tr.trValidatorHash tp,
     upBool       =   False  
   }
 

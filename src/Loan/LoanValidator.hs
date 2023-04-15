@@ -70,7 +70,7 @@ loanValidator lparam ldatum lredeemer lcontext =
 
 
         --Looking for param UTxO using the param state token
-        hasNFT :: [TxOut] -> TxOut
+{-        hasNFT :: [TxOut] -> TxOut
         hasNFT outs = case f of
                         [o] -> o
                         _   -> traceError "Exactly one param NFT input needed"
@@ -92,13 +92,13 @@ loanValidator lparam ldatum lredeemer lcontext =
           Just td -> td
           _       -> traceError "Output does not have param datum"
 
-
+-}
 
 
 
         --Arbitrage contract output search
         arbHash :: ValidatorHash
-        arbHash = arbValHash pODatum
+        arbHash = arbValHash ldatum
 
         stakeH :: StakeValidatorHash
         stakeH = stake1 lparam
@@ -121,7 +121,7 @@ loanValidator lparam ldatum lredeemer lcontext =
         usdDec = usd1decimal lparam
 
         usdX :: Integer
-        usdX = usdLL pODatum
+        usdX = 1000000
 
         adaAsset :: AssetClass
         adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
