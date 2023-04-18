@@ -206,7 +206,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       
       collateralCheck :: Bool
-      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * 100 * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum)))
+      collateralCheck = ((llLocked * usd1Dec) >= (usd1Withdrawn * (usdLL pODatum))) && ((cblpLocked * (cblpLL pODatum) * usd1Dec * 100) >= (usd1Withdrawn * (usdLL pODatum) * 1000000 * (cRatio pODatum)))
 
       --Final formulation of withdraw spending conditions
 

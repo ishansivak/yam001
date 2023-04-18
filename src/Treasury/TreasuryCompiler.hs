@@ -29,11 +29,10 @@ tp :: TreasuryParam
 tp = TreasuryParam
   { 
     cblpToken    =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tCBLP",
-    cRatio       =   60,
     stake1       =   Sv.stakeVHash,
     usd1         =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "tUSD",
     usd1decimal  =   1000000,
-    minLoan      =   100,
+    minLoan      =   500,
     maxLoan      =   1000,
     loanValHash  =   Ln.lnValidatorHash LnC.lp ,
     trStateToken =   PLV.assetClass "16b1a90ae98adfc92bd40fed1caf5869ba0aa08b43a8d21c96cb5016" "statetoken"

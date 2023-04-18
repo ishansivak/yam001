@@ -30,7 +30,7 @@ import qualified Prelude as Pr
 data TreasuryParam = TreasuryParam
   { 
     cblpToken    :: AssetClass,
-    cRatio       :: Integer,             --tr/par
+--    cRatio       :: Integer,             --tr/par
     stake1       :: StakeValidatorHash,  --tr , ln
     usd1         :: AssetClass,          --tr , ln
     usd1decimal  :: Integer,             --tr , ln

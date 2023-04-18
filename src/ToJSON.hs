@@ -62,9 +62,10 @@ paramDatum :: ParamDatum
 paramDatum = ParamDatum
   { 
     usdLL        =   1000000,
-    cblpLL       =   10000,
+    cblpLL       =   1000000,
     arbValHash   =   Tr.trValidatorHash tp,
-    upBool       =   False  
+    upBool       =   False,  
+    cRatio       =   100
   }
 
 updateRedeemer :: TreasuryRedeemer
