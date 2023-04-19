@@ -127,7 +127,7 @@ loanValidator lparam ldatum lredeemer lcontext =
         adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
 
         arbCondition :: Bool
-        arbCondition = (assetClassValueOf arbValue adaAsset) * usdDec * 100 >= (usdAmount loanInputDatum) * 110 * usdX
+        arbCondition = (assetClassValueOf arbValue usdAsset) >= (usdAmount loanInputDatum)
         
         --NFT Burning Conditions outlined below
         loanNFT :: AssetClass
