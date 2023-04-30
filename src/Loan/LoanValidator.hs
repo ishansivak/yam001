@@ -113,14 +113,28 @@ loanValidator lparam ldatum lredeemer lcontext =
 
         tOPs :: [TxOut]
         tOPs = txInfoOutputs info
+        
+        tINs :: [TxOut]
+        tINs = [ txInInfoResolved ins | ins <- txInfoInputs info]
+        
+        arbIn :: TxOut
+        arbIn = case [ins | ins <- tINs , (txOutAddress ins) == (scriptValidatorHashAddress arbHash (Just stakeH))] of
+          [o]    -> o
+          _      -> traceError "exactly one arb input expected!"
 
         arbOutput :: TxOut
         arbOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress arbHash (Just stakeH))] of
           [o]    -> o
           _      -> traceError "exactly one arb output expected!"
 
-        arbValue :: Value
-        arbValue = txOutValue arbOutput
+        arbOutValue :: Value
+        arbOutValue = txOutValue arbOutput
+        
+        arbInValue :: Value
+        arbInValue = txOutValue arbIn
+
+        usdRepaid :: Integer
+        usdRepaid = ((assetClassValueOf arbOutValue usdAsset) - (assetClassValueOf arbInValue usdAsset))
 
         usdAsset :: AssetClass
         usdAsset = usd1 lparam
@@ -141,7 +155,7 @@ loanValidator lparam ldatum lredeemer lcontext =
         yearMilli = 31556952000
 
         arbCondition :: Bool
-        arbCondition = ((assetClassValueOf arbValue usdAsset) - usdPrincipal) * yearMilli * 10000 >= usdPrincipal * (interestRate pODatum) * lnPeriod
+        arbCondition = ( usdRepaid - usdPrincipal) * yearMilli * 10000 >= usdPrincipal * (interestRate pODatum) * lnPeriod
         
         --NFT Burning Conditions outlined below
         loanNFT :: AssetClass

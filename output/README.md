@@ -4,10 +4,11 @@ data LoanDatum = LoanDatum
   { 
     usdAmount     :: Integer ,
     paramNFT      :: AssetClass ,
-    loanToken     :: AssetClass
+    loanToken     :: AssetClass ,
+    loanStart     :: POSIXTime
   }
 ```
-Please fill in the accurate values for usdAmount (USD amount * 10 ^ 6 for decimal). Loan token is simply the minting Currency Policy plus the token name (which is the treasury txhash (without index)).
+Please fill in the accurate values for usdAmount (USD amount * 10 ^ 6 for decimal). Loan token is simply the minting Currency Policy plus the token name (which is the treasury txhash (without index)). loanStart is the starting POSIX time of the loan (in milliseconds). This time has to be lower than the beginning of the validity interval.
 
 
 

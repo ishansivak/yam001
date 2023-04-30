@@ -234,7 +234,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       
       --Deposit conditions
       depositConditions :: Bool
-      depositConditions = (1 == assetClassValueOf (valueSpent info) prmAsset)   --Placeholder till depositing to UTxO's is implemented
+      depositConditions = stateTokenCondition && (usd1Withdrawn < 0) && datumCondition  --Placeholder till depositing to UTxO's is implemented
       --Update conditions
       
 
