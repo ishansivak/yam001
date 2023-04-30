@@ -38,7 +38,8 @@ data ParamDatum = ParamDatum
     cblpLL       :: Integer,             --oracle
     arbValHash   :: ValidatorHash,       --arb
     upBool       :: Bool,
-    cRatio       :: Integer
+    cRatio       :: Integer ,
+    interestRate :: Integer              --basis points
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 

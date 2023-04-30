@@ -19,6 +19,8 @@ import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
 import Plutus.V1.Ledger.Value
+import Plutus.V1.Ledger.Time
+import qualified Plutus.V1.Ledger.Interval as Iv
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import PlutusTx
@@ -56,17 +58,15 @@ loanValidator lparam ldatum lredeemer lcontext =
           [] -> True  --There should be no loan outputs
           _  -> False --In case there are any outputs, tx is invalid.
         
-        lDatum :: OutputDatum -> Maybe LoanDatum
-        lDatum md = do 
-          case md of
-            OutputDatum d -> fromBuiltinData (getDatum d)
-            _             -> traceError "Datum not found"
         
         loanInputDatum :: LoanDatum
         loanInputDatum = ldatum
         
         prmAsset :: AssetClass
         prmAsset = paramNFT loanInputDatum
+
+        lnStart :: POSIXTime
+        lnStart = loanStart loanInputDatum
 
 
         --Looking for param UTxO using the param state token
@@ -93,8 +93,16 @@ loanValidator lparam ldatum lredeemer lcontext =
           _       -> traceError "Output does not have param datum"
 
 
+        valRange :: POSIXTimeRange
+        valRange = txInfoValidRange info
 
-
+        lnEnd :: POSIXTime
+        lnEnd = case Iv.ivTo valRange of
+          UpperBound (Finite x) _  -> x
+          _                        -> traceError "Upper bound of transaction not defined"
+        
+        lnPeriod :: Integer     --Number of milliseconds for which loan lasted
+        lnPeriod = ((getPOSIXTime lnEnd) - (getPOSIXTime lnStart))
 
         --Arbitrage contract output search
         arbHash :: ValidatorHash
@@ -126,8 +134,14 @@ loanValidator lparam ldatum lredeemer lcontext =
         adaAsset :: AssetClass
         adaAsset = AssetClass{unAssetClass = (adaSymbol , adaToken)}
 
+        usdPrincipal :: Integer
+        usdPrincipal = usdAmount loanInputDatum
+
+        yearMilli :: Integer
+        yearMilli = 31556952000
+
         arbCondition :: Bool
-        arbCondition = (assetClassValueOf arbValue usdAsset) >= (usdAmount loanInputDatum)
+        arbCondition = ((assetClassValueOf arbValue usdAsset) - usdPrincipal) * yearMilli * 10000 >= usdPrincipal * (interestRate pODatum) * lnPeriod
         
         --NFT Burning Conditions outlined below
         loanNFT :: AssetClass

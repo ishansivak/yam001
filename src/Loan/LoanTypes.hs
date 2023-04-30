@@ -44,7 +44,8 @@ data LoanDatum = LoanDatum
   { 
     usdAmount     :: Integer ,
     paramNFT      :: AssetClass ,
-    loanToken     :: AssetClass
+    loanToken     :: AssetClass ,
+    loanStart     :: POSIXTime
   }
   deriving (Pr.Eq, Pr.Ord, Show, Generic)
 {-

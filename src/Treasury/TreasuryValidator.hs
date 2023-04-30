@@ -19,6 +19,8 @@ import qualified Ledger.Ada as Ada
 import Plutus.Script.Utils.V1.Typed.Scripts.Validators (DatumType, RedeemerType)
 import Plutus.Script.Utils.V2.Typed.Scripts (TypedValidator, ValidatorTypes, mkTypedValidator, mkTypedValidatorParam, mkUntypedValidator, validatorScript, validatorHash)
 import Plutus.V1.Ledger.Value
+import qualified Plutus.V1.Ledger.Time   --  as Time
+import qualified Plutus.V1.Ledger.Interval as Iv
 import Plutus.V2.Ledger.Api
 import Plutus.V2.Ledger.Contexts
 import PlutusTx
@@ -156,7 +158,7 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       loanValue = valueLockedBy info (loanValHash pODatum)
 -}
       loanOutput :: TxOut
-      loanOutput = case [op | op <- tOPs , (txOutAddress op) == (scriptValidatorHashAddress (loanValHash tparam) (Just (stake1 tparam)))] of
+      loanOutput = case [op | op <- tOPs , (addressCredential (txOutAddress op)) == (ScriptCredential (loanValHash tparam))] of
         [o]     -> o
         _       -> traceError "Expected exactly one loan output"
       
@@ -213,10 +215,15 @@ treasuryValidator tparam tdatum tredeemer tcontext =
       minmaxLoanCondition :: Bool
       minmaxLoanCondition = (usd1Withdrawn >= (minLoan tparam) * usd1Dec) && (usd1Withdrawn <= (maxLoan tparam) * usd1Dec)
 
+      valRange :: POSIXTimeRange
+      valRange = txInfoValidRange info
+
+
       loanDatumCondition :: Bool
       loanDatumCondition = ((Ln.usdAmount loanDatum) >= usd1Withdrawn) &&
                            ((Ln.paramNFT loanDatum) == prmAsset) &&
-                           ((Ln.loanToken loanDatum) == (assetClass loanNFTPolicy loanNFTName))
+                           ((Ln.loanToken loanDatum) == (assetClass loanNFTPolicy loanNFTName)) &&
+                           (Iv.before (Ln.loanStart loanDatum) valRange)
 
       datumCondition :: Bool
       datumCondition =  treasuryInputDatum == treasuryOutputDatum
